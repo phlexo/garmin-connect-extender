@@ -19,3 +19,9 @@ The Garmin Connect Extender web extension add additional features and fixes to t
 ## Acknowledgements
 
 * Full screen map is based on the bookmarklet made by johanberonius found at https://github.com/https://github.com/johanberonius/fullscreen-maps/fullscreen-maps.
+     
+## Disclaimer
+
+This software is not endorsed by Garmin. Please do not ask them for support.
+
+The term Garmin and the Garmin logo are the exclusive trademarks of, and are owned by, Garmin Inc.
