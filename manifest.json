@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Garmin Connect Extender",
   "description": "",
-  "version": "1.0",
+  "version": "1.0.1",
   "homepage_url": "https://github.com/phlexo/garmin-connect-extender/",
   "icons": {
     "48": "icons/gce-48.png"

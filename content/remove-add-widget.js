@@ -7,6 +7,6 @@
         browser.runtime.sendMessage({
             message: "widget_clicked"
         });
-        $(".activity-list").css('border', '2px solid yellow');
+        //$(".activity-list").css('border', '2px solid yellow');
     });
 })(jQuery);
