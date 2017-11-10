@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
   "name": "Garmin Connect Extender",
-  "description": "",
-  "version": "1.0.1",
+  "description": "The Garmin Connect Extender web extension add additional features and fixes to the Garmin Connect web site.",
+  "version": "1.0.2",
   "homepage_url": "https://github.com/phlexo/garmin-connect-extender/",
   "icons": {
     "48": "icons/gce-48.png"
@@ -12,7 +12,7 @@
   },
   "content_scripts": [{
     "matches": ["https://connect.garmin.com/modern/*"],
-    "js": ["utility/jquery-3.2.1.min.js", "content/fullscreen-maps.js", "content/remove-add-widget.js", "content/calendar-totals.js", "content/widget-size.js", "content/better-activities-widget.js", "content/better-sidebar.js"]
+    "js": ["utility/jquery-3.2.1.min.js", "content/fullscreen-maps.js"]
   }],
   "permissions": [
     "https://connect.garmin.com/modern/*",
