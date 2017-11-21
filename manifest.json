@@ -20,7 +20,9 @@
   "permissions": [
     "https://connect.garmin.com/modern/*",
     "webRequest",
-    "storage"
+    "storage",
+    "activeTab",
+    "tabs"
   ],
   "applications": {
     "gecko": {
