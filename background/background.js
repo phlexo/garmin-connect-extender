@@ -1,6 +1,4 @@
 (function () {
-    console.log("FireFox addon background script loaded!")
-
     function GetNewWidth(originalWidth) {
         return (originalWidth + 100) + "px";
     }
@@ -20,8 +18,6 @@
 `;
 
     function update(tab) {
-        console.log("update")
-
         function onError(error) {
             console.log(`Error: ${error}`);
         }
