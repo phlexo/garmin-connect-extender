@@ -1,28 +1,36 @@
 {
   "manifest_version": 2,
   "name": "Garmin Connect Extender",
-  "description": "",
-  "version": "1.0",
+  "description": "The Garmin Connect Extender web extension add additional features and fixes to the Garmin Connect web site.",
+  "version": "1.0.4",
   "homepage_url": "https://github.com/phlexo/garmin-connect-extender/",
   "icons": {
-    "48": "icons/gce-48.png"
+    "32": "icons/gce-32.png",
+    "48": "icons/gce-48.png",
+    "64": "icons/gce-64.png",
+    "128": "icons/gce-128.png"
   },
   "background": {
     "scripts": ["background/background.js"]
   },
   "content_scripts": [{
-    "matches": ["https://connect.garmin.com/modern*"],
-    "js": ["utility/jquery-3.2.1.min.js", "content/widget-size.js"]
+    "matches": ["*://connect.garmin.com/modern*"],
+    "js": ["utility/jquery-3.2.1.min.js", "content/fullscreen-maps.js"]
   }],
   "permissions": [
-    "https://connect.garmin.com/modern*",
+    "*://connect.garmin.com/modern*",
     "webRequest",
-    "activeTab",
-    "tabs"
+    "storage",
+    "tabs",
+    "activeTab"
   ],
   "applications": {
     "gecko": {
-      "id": "garmin-connect-extender@phlexo.se"
+      "id": "garmin-connect-extender@phlexo.se",
+      "strict_min_version": "52.0"
     }
+  },
+  "options_ui": {
+    "page": "options.html"
   }
 }
