@@ -1,35 +1,45 @@
 (function () {
     console.log("FireFox addon background script loaded!")
 
-    function activitiesLoaded(details) {
-        var message = "Activities has now been loaded.";
-        console.log(message);
-        browser.tabs.sendMessage(details.tabId, {
-            message: message
-        });
+    function GetNewWidth(originalWidth) {
+        return (originalWidth + 100) + "px";
     }
 
-    browser.webRequest.onCompleted.addListener(
-        activitiesLoaded, {
-            urls: ["https://connect.garmin.com/modern/proxy/activitylist-service/activities/list/*"]
-        }
-    );
+    var css = `
+.main-body { width: calc(100% - 40px); }
+.main-body > .content:not(.page) { max-width: 100%; margin-left: 20px; margin-right: 20px; }
+.widget-column { width: ${GetNewWidth(340)}; }
+.widget { width: ${GetNewWidth(320)}; }
+.widget-activities .activities-other-attributes { width: ${GetNewWidth(320)}; }
+.widget-activities .inline-edit-target { width: ${GetNewWidth(220)}; max-width: ${GetNewWidth(220)}; }
+.widget-footer { width: ${GetNewWidth(290)}; }
+.widget .activity-list td:first-child a { width: ${GetNewWidth(80)}; }
+.widget-activities .inline-edit-editable-text { width: ${GetNewWidth(190)}; }
+.workout-to-calendar .calendar-month table, .widget.calendar-month table { width : ${GetNewWidth(319)}; }
+.manage-widgets { display: none; }
+`;
 
-    function activitiesRefreshed(details) {
-        var message = "Activities has now been refreshed.";
-        console.log(message);
-        browser.tabs.sendMessage(details.tabId, {
-            message: message
+    function update(tab) {
+        console.log("update")
+
+        function onError(error) {
+            console.log(`Error: ${error}`);
+        }
+
+        var insertingCSS = browser.tabs.insertCSS({
+            code: css
         });
+
+        insertingCSS.then(tab, onError);
     }
 
-    browser.webRequest.onCompleted.addListener(
-        activitiesRefreshed, {
-            urls: ["https://connect.garmin.com/modern/proxy/activitylist-service/activities/*"]
+    browser.tabs.query({}).then((tabs) => {
+        for (let tab of tabs) {
+            update(tab);
         }
-    );
+    });
 
-    browser.runtime.onMessage.addListener(request => {
-        console.log(request.message);
+    browser.tabs.onUpdated.addListener((id, changeInfo, tab) => {
+        update(tab);
     });
 })();
