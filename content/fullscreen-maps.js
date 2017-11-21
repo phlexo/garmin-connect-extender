@@ -1,10 +1,10 @@
 (function ($) {
     /*
-    * Based on the bookmarklet by johanberonius.
-    * https://github.com/johanberonius/fullscreen-maps
-    */
-    $(document).on('DOMNodeInserted', '#map-controls, #activity-map-canvas, .widget-map, .map-controls', function (event) {
-        var $target = $(event.target),
+     * Based on the bookmarklet by johanberonius.
+     * https://github.com/johanberonius/fullscreen-maps
+     */
+    function update(target) {
+        var $target = $(target),
             $mapControls = $(),
             $mapContainer = $(),
             $mapFullscreen = $();
@@ -43,5 +43,22 @@
             $mapControls.append($fullscreenButton);
             $mapContainer.before('<style>#activity-map-canvas:-webkit-full-screen {width: 100% !important; height: 100% !important;}</style>');
         }
+    }
+
+    browser.storage.local.get().then(function (item) {
+        var enabled = true;
+        if (item.map) {
+            enabled = item.map.enabled;
+        }
+        if (enabled) {
+            $(document).on('DOMNodeInserted', '#map-controls, #activity-map-canvas, .widget-map, .map-controls', function (event) {
+                update(event.target);
+            });
+        }
+        $('#map-controls, #activity-map-canvas, .widget-map, .map-controls').each(function() {
+            update(this);
+        });
+    }, function (error) {
+        console.log(`Error: ${error}`);
     });
 })(jQuery);
