@@ -15,16 +15,20 @@
   },
   "content_scripts": [{
     "matches": ["https://connect.garmin.com/modern/*"],
-    "js": ["utility/jquery-3.2.1.min.js", "content/fullscreen-maps.js"]
+    "js": ["utility/jquery-3.2.1.min.js", "content/fullscreen-maps.js", "content/widget-size.js"]
   }],
   "permissions": [
     "https://connect.garmin.com/modern/*",
-    "webRequest"
+    "webRequest",
+    "storage"
   ],
   "applications": {
     "gecko": {
       "id": "garmin-connect-extender@phlexo.se",
-	  "strict_min_version": "48.0"
+      "strict_min_version": "48.0"
     }
+  },
+  "options_ui": {
+    "page": "options.html"
   }
 }
