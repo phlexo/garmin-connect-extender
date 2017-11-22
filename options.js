@@ -1,23 +1,24 @@
 function saveOptions(e) {
-    e.preventDefault();
     browser.storage.local.set({
-        widget: { size: document.querySelector("#widget-size").value },
-        map: { fullscreen: document.querySelector("#fullscreen-button").checked }
+        widget: {
+            width: document.querySelector("#widget-width").value,
+            removePadding: document.querySelector("#remove-padding").checked
+        },
+        map: {
+            fullscreen: document.querySelector("#fullscreen-button").checked
+        }
     });
+    e.preventDefault();
 }
 
 function restoreOptions() {
-    function setCurrentChoice(result) {
-        document.querySelector("#widget-size").value = result.widget ? result.widget.size : "-1";
+    browser.storage.local.get().then((result) => {
+        document.querySelector("#widget-width").value = result.widget ? result.widget.width : "420";
+        document.querySelector("#remove-padding").checked = result.widget ? result.widget.removePadding : true;
         document.querySelector("#fullscreen-button").checked = result.map ? result.map.fullscreen : true;
-    }
-
-    function onError(error) {
-        console.log(`Error: ${error}`);
-    }
-
-    var getting = browser.storage.local.get();
-    getting.then(setCurrentChoice, onError);
+    }, (error) => {
+        console.log(`Error when restoring options: ${error}`);
+    });
 }
 
 document.addEventListener("DOMContentLoaded", restoreOptions);
