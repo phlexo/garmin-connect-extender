@@ -1,9 +1,11 @@
 (function ($) {
+    var enabled = false;
+
     /*
      * Based on the bookmarklet by johanberonius.
      * https://github.com/johanberonius/fullscreen-maps
      */
-    function update(target) {
+    function addFullscreenButton(target) {
         var $target = $(target),
             $mapControls = $(),
             $mapContainer = $(),
@@ -45,20 +47,51 @@
         }
     }
 
-    browser.storage.local.get().then(function (item) {
-        var enabled = true;
-        if (item.map) {
-            enabled = item.map.enabled;
-        }
-        if (enabled) {
-            $(document).on('DOMNodeInserted', '#map-controls, #activity-map-canvas, .widget-map, .map-controls', function (event) {
-                update(event.target);
+    function addFullscreenButtonLive(event) {
+        addFullscreenButton(event.target);
+    }
+
+    function removeFullscreenButton(target) {
+        $(target).find(".map-full-screen").remove();
+    }
+
+    function applyFullscreenButton() {
+        if (enabled === true) {
+            $('#map-controls, #activity-map-canvas, .widget-map, .map-controls').each(function () {
+                addFullscreenButton(this);
             });
+            $(document).on('DOMNodeInserted', '#map-controls, #activity-map-canvas, .widget-map, .map-controls', addFullscreenButtonLive);
         }
-        $('#map-controls, #activity-map-canvas, .widget-map, .map-controls').each(function() {
-            update(this);
-        });
-    }, function (error) {
-        console.log(`Error: ${error}`);
+        else {
+            $('#map-controls, #activity-map-canvas, .widget-map, .map-controls').each(function () {
+                removeFullscreenButton(this);
+            });
+            $(document).off('DOMNodeInserted', '#map-controls, #activity-map-canvas, .widget-map, .map-controls', addFullscreenButtonLive);
+        }
+    }
+
+    function loadOptions(options) {
+        if (options.map != undefined) {
+            if (options.map.fullscreen != undefined) {
+                enabled = options.map.fullscreen;
+                console.log(`enabled=${enabled}`);
+            }
+        }
+    }
+
+    browser.storage.local.get().then(
+        (options) => {
+            console.log(`Options loaded.`);
+            loadOptions(options);
+            applyFullscreenButton();
+        }, (error) => {
+            console.log(`Error: ${error}`);
+        }
+    );
+
+    browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+        console.log(`Options updated.`);
+        loadOptions(request.options);
+        applyFullscreenButton();
     });
 })(jQuery);
