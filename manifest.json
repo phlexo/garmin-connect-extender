@@ -11,7 +11,7 @@
     "128": "icons/gce-128.png"
   },
   "background": {
-    "scripts": ["background/background.js"]
+    "scripts": ["utility/jquery-3.2.1.min.js", "background/dashboard.js"]
   },
   "content_scripts": [{
     "matches": ["*://connect.garmin.com/modern*"],
@@ -30,6 +30,6 @@
     }
   },
   "options_ui": {
-    "page": "options.html"
+    "page": "options/options.html"
   }
 }
