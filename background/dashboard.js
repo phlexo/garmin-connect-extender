@@ -60,7 +60,7 @@
 
     function updateAll() {
         browser.tabs.query({
-            url: ["*://connect.garmin.com/modern/", "*://connect.garmin.com/modern/dashboard/*"]
+            url: ["*://connect.garmin.com/modern", "*://connect.garmin.com/modern/", "*://connect.garmin.com/modern/dashboard/*"]
         }).then((tabs) => {
             for (let tab of tabs) {
                 applyCSS(tab);
@@ -69,7 +69,7 @@
     }
 
     browser.tabs.onUpdated.addListener((id, changeInfo, tab) => {
-        if (tab.url.match(/https?:\/\/connect.garmin.com\/modern\/[dashboard\/.*]?/gi)) {
+        if (tab.url.match(/https?:\/\/connect.garmin.com\/modern[\/]?[dashboard\/.*]?/gi)) {
             applyCSS(tab);
         }
     });
