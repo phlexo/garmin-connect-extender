@@ -16,7 +16,8 @@
         .widget-footer { width: ${newElementWidth(290)}px; }
         .widget .activity-list td:first-child a { width: ${newElementWidth(80)}px; }
         .widget-activities .inline-edit-editable-text { width: ${newElementWidth(190)}px; }
-        .workout-to-calendar .calendar-month table, .widget.calendar-month table { width : ${newElementWidth(319)}px; }`;
+        .workout-to-calendar .calendar-month table, .widget.calendar-month table { width : ${newElementWidth(319)}px; }
+        .highcharts-container { width: ${newElementWidth(290)}px !important;}`;
 
         console.log(`Inserting CSS for setting widget width to ${newWidgetWidth}px on ${tab.url}.`);
         browser.tabs.insertCSS(tab.id, {
