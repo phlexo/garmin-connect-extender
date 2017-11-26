@@ -6,9 +6,7 @@
                 removePadding: document.querySelector("#remove-padding").checked,
                 hideNewWidget: document.querySelector("#hide-new-widget").checked
             },
-            global: {
-                fullscreenMapButton: document.querySelector("#fullscreen-button").checked
-            }
+            fullscreenMapButton: document.querySelector("#fullscreen-button").checked
         };
         browser.storage.local.set(options);
         return options;
@@ -31,14 +29,12 @@
                         removePadding: true,
                         hideNewWidget: false
                     },
-                    global: {
-                        fullscreenMapButton: true
-                    }
+                    fullscreenMapButton: true
                 }, result);
                 document.querySelector("#widget-width").value = options.dashboard.widgetWidth;
                 document.querySelector("#remove-padding").checked = options.dashboard.removePadding;
                 document.querySelector("#hide-new-widget").checked = options.dashboard.hideNewWidget;
-                document.querySelector("#fullscreen-button").checked = options.global.fullscreenMapButton;
+                document.querySelector("#fullscreen-button").checked = options.fullscreenMapButton;
             },
             (error) => {
                 console.log(`Error when restoring options: ${error}`);

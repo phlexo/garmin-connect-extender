@@ -1,11 +1,9 @@
 (function ($) {
-    var enabled = false;
-
     /*
      * Based on the bookmarklet by johanberonius.
      * https://github.com/johanberonius/fullscreen-maps
      */
-    function addFullscreenButton(target) {
+    function addButton(target) {
         var $target = $(target),
             $mapControls = $(),
             $mapContainer = $(),
@@ -47,51 +45,33 @@
         }
     }
 
-    function addFullscreenButtonLive(event) {
-        addFullscreenButton(event.target);
-    }
-
-    function removeFullscreenButton(target) {
-        $(target).find(".map-full-screen").remove();
-    }
-
-    function applyFullscreenButton() {
-        if (enabled === true) {
-            $('#map-controls, #activity-map-canvas, .widget-map, .map-controls').each(function () {
-                addFullscreenButton(this);
-            });
-            $(document).on('DOMNodeInserted', '#map-controls, #activity-map-canvas, .widget-map, .map-controls', addFullscreenButtonLive);
-        }
-        else {
-            $('#map-controls, #activity-map-canvas, .widget-map, .map-controls').each(function () {
-                removeFullscreenButton(this);
-            });
-            $(document).off('DOMNodeInserted', '#map-controls, #activity-map-canvas, .widget-map, .map-controls', addFullscreenButtonLive);
-        }
-    }
-
-    function loadOptions(options) {
-        if (options.map != undefined) {
-            if (options.map.fullscreen != undefined) {
-                enabled = options.map.fullscreen;
-                console.log(`enabled=${enabled}`);
-            }
-        }
-    }
-
     browser.storage.local.get().then(
         (options) => {
             console.log(`Options loaded.`);
-            loadOptions(options);
-            applyFullscreenButton();
+            if (options.fullscreenMapButton === true) {
+                console.log("Fullscreen map button is enabled, will add when the map has been loaded.");
+                $(document).on('DOMNodeInserted', '#map-controls, #activity-map-canvas, .widget-map, .map-controls', function () {
+                    addButton(this);
+                });
+            }
+            else {
+                console.log("Fullscreen map button is not enabled.");
+            }
         }, (error) => {
-            console.log(`Error: ${error}`);
+            console.log(`Error while loading options: ${error}`);
         }
     );
 
     browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
         console.log(`Options updated.`);
-        loadOptions(request.options);
-        applyFullscreenButton();
+        if (request.options.fullscreenMapButton === true) {
+            console.log("Fullscreen button map is enabled, adding the button now.");
+            $('#map-controls, #activity-map-canvas, .widget-map, .map-controls').each(function () {
+                addButton(this);
+            });
+        }
+        else {
+            console.log("Fullscreen button map is not enabled.");
+        }
     });
 })(jQuery);
