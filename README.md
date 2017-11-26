@@ -6,12 +6,12 @@ The Garmin Connect Extender web extension add additional features and fixes to t
 
 * Full screen button on the map in the activities widget.
 * Full screen button on the map in the activities page.
+* Configurable size of the widgets.
+* Removable add-widget-button on the dashboard.
 
 ## Coming features
 
-* Configurable size of the widgets.
 * More information on the dashboard.
-* Removable add-widget-button on the dashboard.
 * Remove crap from the side bar, stuff here no serious athlete needs.
 * Improve the calendar, show more information in the summary by default.
 * Calculate stress score, I don't understand why this isn't available on Garmin Connect, important stuff.
