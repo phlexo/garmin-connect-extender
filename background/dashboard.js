@@ -45,22 +45,24 @@
     }
 
     function applyCSS(tab) {
-        if (newWidgetWidth > 0) {
-            applyWidgetWidthCSS(tab);
-        }
-
-        if (removePadding === true) {
-            applyPagePaddingCSS(tab);
-        }
-
-        if (hideNewWidget === true) {
-            applyNewWidgetButtonCSS(tab);
+        if (tab.url.match(/https?:\/\/connect.garmin.com\/modern[\/]?[dashboard\/.*]?/gi)) {
+            if (newWidgetWidth > 0) {
+                applyWidgetWidthCSS(tab);
+            }
+    
+            if (removePadding === true) {
+                applyPagePaddingCSS(tab);
+            }
+    
+            if (hideNewWidget === true) {
+                applyNewWidgetButtonCSS(tab);
+            }
         }
     }
 
     function updateAll() {
         browser.tabs.query({
-            url: ["*://connect.garmin.com/modern", "*://connect.garmin.com/modern/", "*://connect.garmin.com/modern/dashboard/*"]
+            url: ["*://connect.garmin.com/modern*"]
         }).then((tabs) => {
             for (let tab of tabs) {
                 applyCSS(tab);
@@ -69,9 +71,7 @@
     }
 
     browser.tabs.onUpdated.addListener((id, changeInfo, tab) => {
-        if (tab.url.match(/https?:\/\/connect.garmin.com\/modern[\/]?[dashboard\/.*]?/gi)) {
-            applyCSS(tab);
-        }
+        applyCSS(tab);
     });
 
     function loadOptions(options) {

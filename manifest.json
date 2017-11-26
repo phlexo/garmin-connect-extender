@@ -18,7 +18,7 @@
     "js": ["utility/jquery-3.2.1.min.js", "content/fullscreen-maps.js"]
   }],
   "permissions": [
-    "https://connect.garmin.com/modern/",
+    "https://connect.garmin.com/modern*",
     "tabs",
     "webRequest",
     "storage"
