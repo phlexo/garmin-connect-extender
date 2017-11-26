@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Garmin Connect Extender",
   "description": "The Garmin Connect Extender web extension add additional features and fixes to the Garmin Connect web site.",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "homepage_url": "https://github.com/phlexo/garmin-connect-extender/",
   "icons": {
     "32": "icons/gce-32.png",
