@@ -11,7 +11,7 @@
     "128": "icons/gce-128.png"
   },
   "background": {
-    "scripts": ["utility/jquery-3.2.1.min.js", "dashboard/background.js"]
+    "scripts": ["utility/jquery-3.2.1.min.js", "utility/quantities.js", "utility/math.js", "utility/moment.js", "utility/moment-duration-format.js", "dashboard/background.js"]
   },
   "content_scripts": [{
     "matches": ["*://connect.garmin.com/modern*"],
@@ -21,12 +21,16 @@
     "https://connect.garmin.com/modern*",
     "tabs",
     "webRequest",
+    "webRequestBlocking",
     "storage"
   ],
   "applications": {
     "gecko": {
       "id": "garmin-connect-extender@phlexo.se",
-      "strict_min_version": "52.0"
+      "strict_min_version": "57.0"
     }
-  }
+  },
+  "web_accessible_resources": [
+    "dashboard/page.html"
+  ]
 }
