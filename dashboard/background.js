@@ -1,6 +1,6 @@
 (function ($) {
     browser.tabs.onUpdated.addListener((id, changeInfo, tab) => {
-        if (tab.url.match(/https?:\/\/connect.garmin.com\/modern\/dashboard.*/gi)) {
+        if (tab.url.match(/https?:\/\/connect.garmin.com\/modern\/dashboard\/.*/gi)) {
             console.log(`Laddar aktiviteter för tab med id ${tab.id}.`)
 
             // Årlig status
@@ -20,6 +20,8 @@
                     "activityList": []
                 };
 
+                console.log(result);
+
                 for (let i = 0; i < result.activityList.length; i++) {
                     let activity = {};
                     activity["activityId"] = result.activityList[i].activityId;
@@ -32,6 +34,8 @@
                     activity["elevationGain"] = result.activityList[i].elevationGain;
                     viewModel.activityList.push(activity);
                 }
+
+                console.log(viewModel);
 
                 browser.tabs.sendMessage(tab.id, {
                     viewModel: viewModel

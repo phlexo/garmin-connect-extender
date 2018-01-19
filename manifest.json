@@ -15,7 +15,7 @@
   },
   "content_scripts": [{
     "matches": ["*://connect.garmin.com/modern*"],
-    "js": ["utility/jquery-3.2.1.min.js", "utility/tmpl.min.js", "fullscreen-maps/content.js", "dashboard/content.js"]
+    "js": ["utility/jquery-3.2.1.min.js", "utility/handlebars-v4.0.11.js", "fullscreen-maps/content.js", "dashboard/content.js"]
   }],
   "permissions": [
     "https://connect.garmin.com/modern*",
