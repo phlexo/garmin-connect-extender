@@ -24,19 +24,61 @@
         };
     }
 
-    function getActivity(activity) {
+    function getOtherDetails(activity) {
         return {
+            distance: {
+                name: "Sträcka",
+                value: Qty(`${activity.distance} m`).toPrec('0.01 km').format('km')
+            },
+            duration: {
+                name: "Tid",
+                value: moment.duration(activity.duration, "seconds").format("d[d] h[h]", 1)
+            },
+            calories: {
+                name: "Kalorier",
+                value: activity.calories
+            },
+            averageSpeed: {
+                name: "Hastighet (km/h)",
+                value: activity.averageSpeed
+            },
+            elevationGain: {
+                name: "Stigning",
+                value: activity.elevationGain
+            }
+        };
+    }
+
+    function getActivity(activity) {
+        let viewModel = {
             id: activity.activityId,
             name: activity.activityName,
             type: activity.activityType.typeKey,
             iconClass: `icon-activity-${activity.activityType.typeKey}`,
             link: `/modern/activity/${activity.activityId}`,
-            runningDetails: getRunningDetails(activity)
+            ownerProfileImageUrlMedium: activity.ownerProfileImageUrlMedium
+        };
+        switch (activity.activityType.typeKey) {
+            case "running":
+                viewModel.runningDetails = getRunningDetails(activity);
+                break;
+            default:
+                viewModel.otherDetails = getOtherDetails(activity);
+                break;
+        }
+        return viewModel;
+    }
+
+    function getSummaryForCurrentWeek() {
+        return {
+            name: "Denna vecka"
         };
     }
 
-    function getSummary() {
-        return null;
+    function getSummaryForWeek(week) {
+        return {
+            name: `Vecka ${week}`
+        };
     }
 
     function load(tab) {
@@ -54,15 +96,23 @@
 
         $.ajax({
             url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566", success: function (result) {
-                console.log(result);
                 let feed = [];
+                feed.push({
+                    title: "Summering",
+                    summary: getSummaryForCurrentWeek()
+                });
                 for (let i = 0; i < result.activityList.length; i++) {
+                    if (i%5==4) {
+                        feed.push({
+                            title: "Summering",
+                            summary: getSummaryForWeek(17)
+                        });
+                    }
                     feed.push({
-                        summary: getSummary(),
+                        title: "Aktivitet",
                         activity: getActivity(result.activityList[i])
                     });
                 }
-                console.log(feed);
                 browser.tabs.sendMessage(tab.id, {
                     feed: feed
                 });

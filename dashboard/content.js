@@ -6,7 +6,7 @@
         `);
     } 
 
-    Handlebars.registerPartial('running-details', `
+    Handlebars.registerPartial('details', `
         <div class="row-fluid top-xs">
             <div class="span4 data-1">
                 <div class="h5 data-bit">{{distance.value}}</div>
@@ -52,9 +52,23 @@
         </h4>
         <div class="activity-data-placeholder">
             {{#with runningDetails}}
-                {{>running-details}}
+                {{>details}}
+            {{/with}}
+            {{#with otherDetails}}
+                {{>details}}
             {{/with}}
         </div>
+        {{#if ownerProfileImageUrlMedium}}
+        <img src="{{ownerProfileImageUrlMedium}}" />
+        {{/if}}
+    `);
+
+    Handlebars.registerPartial('summary', `
+        <h4 class="clearfix">
+            <div class="js-activityNameEditPlaceholder inline-edit inline-edit-text-field">
+                <span>{{name}}</span>
+            </div>
+        </h4>
     `);
     
     let template = Handlebars.compile(`
@@ -62,9 +76,12 @@
             {{#each feed}}
                 <div class="widget widget-large widget-activities" style="width: auto; height: auto;">
                     <div class="widget-header clearfix">
-                        <h2 class="widget-title pull-left">Aktivitet</h2>
+                        <h2 class="widget-title pull-left">{{title}}</h2>
                     </div>
                     <div class="widget-content">
+                        {{#with summary}}
+                            {{>summary}}
+                        {{/with}}
                         {{#with activity}}
                             {{>activity}}
                         {{/with}}
