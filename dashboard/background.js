@@ -20,21 +20,36 @@
                     "activityList": []
                 };
 
-                console.log(result);
-
                 for (let i = 0; i < result.activityList.length; i++) {
-                    let activity = {};
-                    activity["activityId"] = result.activityList[i].activityId;
-                    activity["activityName"] = result.activityList[i].activityName;
-                    activity["typeKey"] = result.activityList[i].activityType.typeKey;
-                    activity["distance"] = Qty(`${result.activityList[i].distance} m`).toPrec('0.01 km').format('km');
-                    activity["duration"] = moment.duration(result.activityList[i].duration, "seconds").format("d[d] h[h]", 1);
-                    activity["calories"] = result.activityList[i].calories;
-                    activity["averageSpeed"] = result.activityList[i].averageSpeed;
-                    activity["elevationGain"] = result.activityList[i].elevationGain;
-                    viewModel.activityList.push(activity);
+                    viewModel.activityList.push({
+                        id: result.activityList[i].activityId,
+                        name: result.activityList[i].activityName,
+                        iconClass: `icon-activity-${result.activityList[i].activityType.typeKey}`,
+                        link: `/modern/activity/${result.activityList[i].activityId}`,
+                        distance: {
+                            name: "Sträcka",
+                            value: Qty(`${result.activityList[i].distance} m`).toPrec('0.01 km').format('km')
+                        },
+                        duration: {
+                            name: "Tid",
+                            value: moment.duration(result.activityList[i].duration, "seconds").format("d[d] h[h]", 1)
+                        },
+                        calories: {
+                            name: "Kalorier",
+                            value: result.activityList[i].calories
+                        },
+                        averageSpeed: {
+                            name: "Tempo (min/km)",
+                            value: result.activityList[i].averageSpeed
+                        },
+                        elevationGain: {
+                            name: "Stigning",
+                            value: result.activityList[i].elevationGain
+                        }
+                    });
                 }
 
+                console.log(result);
                 console.log(viewModel);
 
                 browser.tabs.sendMessage(tab.id, {
