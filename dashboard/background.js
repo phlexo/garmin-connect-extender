@@ -1,21 +1,19 @@
 (function ($) {
-    browser.tabs.onUpdated.addListener((id, changeInfo, tab) => {
-        if (tab.url.match(/https?:\/\/connect.garmin.com\/modern\/dashboard\/.*/gi)) {
-            console.log(`Laddar aktiviteter för tab med id ${tab.id}.`)
+    function load(tab) {
+        // Årlig status
+        // https://connect.garmin.com/modern/proxy/calendar-service/year/2018
 
-            // Årlig status
-            // https://connect.garmin.com/modern/proxy/calendar-service/year/2018
+        // Januari
+        // https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0
 
-            // Januari
-            // https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0
+        // Vecka
+        // https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0/day/18/start/1
 
-            // Vecka
-            // https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0/day/18/start/1
+        // Enskild aktivitet
+        // https://connect.garmin.com/modern/proxy/activity-service/activity/2434047486?_=1516287552093
 
-            // Enskild aktivitet
-            // https://connect.garmin.com/modern/proxy/activity-service/activity/2434047486?_=1516287552093
-
-            $.ajax({url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566", success: function(result) {
+        $.ajax({
+            url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566", success: function (result) {
                 let viewModel = {
                     "activityList": []
                 };
@@ -56,7 +54,15 @@
                 browser.tabs.sendMessage(tab.id, {
                     viewModel: viewModel
                 });
-            }});
+            }
+        });
+    }
+
+    browser.tabs.onUpdated.addListener((id, changeInfo, tab) => {
+        if (changeInfo.status == 'complete' && tab.status == 'complete' && tab.url != undefined) {
+            if (tab.url.match(/https?:\/\/connect.garmin.com\/modern\/dashboard\/.*/gi)) {
+                load(tab);
+            }
         }
     });
 
@@ -65,10 +71,10 @@
             redirectUrl: browser.extension.getURL("dashboard/page.html")
         };
     }
-    
+
     browser.webRequest.onBeforeRequest.addListener(
         redirect,
-        {urls:["https://connect.garmin.com/modern/extension/"], types:["main_frame"]},
+        { urls: ["https://connect.garmin.com/modern/extension/"], types: ["main_frame"] },
         ["blocking"]
     );
 

@@ -1,8 +1,10 @@
 (function ($) {
 
-    $(".main-body").html(`
-        <div id="extender-placeholder"></div>
-    `);
+    if (window.location.href.match(/https?:\/\/connect.garmin.com\/modern\/dashboard\/.*/gi)) {
+        $(".main-body").html(`
+            <div id="extender-placeholder"></div>
+        `);
+    } 
 
     Handlebars.registerHelper('ifEquals', function(v1, v2, options) {
         if(v1 === v2) {
@@ -11,7 +13,7 @@
         return options.inverse(this);
     });
 
-    Handlebars.registerPartial('running', `
+    Handlebars.registerPartial('datafields', `
         <div class="row-fluid top-xs">
             <div class="span4 data-1">
                 <div class="h5 data-bit">{{distance.value}}</div>
@@ -35,12 +37,6 @@
                 <div class="h5 data-bit">{{elevationGain.value}}</div>
                 <span title="{{elevationGain.name}}" class="data-label">{{elevationGain.name}}</span>
             </div>
-        </div>
-    `);
-
-    Handlebars.registerPartial('default', `
-        <div class="row-fluid top-xs">
-            Activity {{type}} not supported.
         </div>
     `);
 
@@ -68,9 +64,9 @@
                 </h4>
                 <div id="activity-data-placeholder">
                     {{#ifEquals type 'running'}}
-                        {{>running}}
+                        {{>datafields}}
                     {{else}}
-                        {{>default}}
+                        {{>datafields}}
                     {{/ifEquals}}
                 </div>
             </div>
