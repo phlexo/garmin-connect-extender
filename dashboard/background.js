@@ -24,6 +24,7 @@
                     viewModel.activityList.push({
                         id: result.activityList[i].activityId,
                         name: result.activityList[i].activityName,
+                        type: result.activityList[i].activityType.typeKey,
                         iconClass: `icon-activity-${result.activityList[i].activityType.typeKey}`,
                         link: `/modern/activity/${result.activityList[i].activityId}`,
                         distance: {
