@@ -53,7 +53,7 @@
                 <h4 class="clearfix">
                     <i class="{{iconClass}} widget-activity-identifier pull-left right-xs"></i>
                     <div class="js-activityNameEditPlaceholder inline-edit inline-edit-text-field">
-                        <a href="{{link}}" class="inline-edit-target" title="{{name}}">{{name}}</a>
+                        <a href="{{link}}" class="inline-edit-target" title="{{name}}" style="max-width: 100%;">{{name}}</a>
                         <button class="inline-edit-trigger modal-trigger">
                             <i class="icon-pencil"></i>
                         </button>
