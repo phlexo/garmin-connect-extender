@@ -6,14 +6,7 @@
         `);
     } 
 
-    Handlebars.registerHelper('ifEquals', function(v1, v2, options) {
-        if(v1 === v2) {
-            return options.fn(this);
-        }
-        return options.inverse(this);
-    });
-
-    Handlebars.registerPartial('datafields', `
+    Handlebars.registerPartial('running-details', `
         <div class="row-fluid top-xs">
             <div class="span4 data-1">
                 <div class="h5 data-bit">{{distance.value}}</div>
@@ -41,47 +34,47 @@
     `);
 
     Handlebars.registerPartial('activity', `
-        <div class="widget widget-large widget-activities" style="width: auto; height: auto;">
-            <div class="widget-header clearfix">
-                <h2 class="widget-title pull-left">Aktivitet</h2>
-            </div>
-            <div class="widget-content">
-                <h4 class="clearfix">
-                    <i class="{{iconClass}} widget-activity-identifier pull-left right-xs"></i>
-                    <div class="js-activityNameEditPlaceholder inline-edit inline-edit-text-field">
-                        <a href="{{link}}" class="inline-edit-target" title="{{name}}" style="max-width: 100%;">{{name}}</a>
-                        <button class="inline-edit-trigger modal-trigger">
-                            <i class="icon-pencil"></i>
-                        </button>
-                        <div class="inline-edit-editable">
-                            <div class="inline-edit-editable-text" style="min-width: 15px;" contenteditable="true">{{name}}</div>
-                            <span class="inline-edit-actions">
-                                <button class="inline-edit-save icon-checkmark"></button>
-                                <button class="inline-edit-cancel icon-close"></button>
-                            </span>
-                        </div>
-                    </div>
-                </h4>
-                <div id="activity-data-placeholder">
-                    {{#ifEquals type 'running'}}
-                        {{>datafields}}
-                    {{else}}
-                        {{>datafields}}
-                    {{/ifEquals}}
+        <h4 class="clearfix">
+            <i class="{{iconClass}} widget-activity-identifier pull-left right-xs"></i>
+            <div class="js-activityNameEditPlaceholder inline-edit inline-edit-text-field">
+                <a href="{{link}}" class="inline-edit-target" title="{{name}}" style="max-width: 100%;">{{name}}</a>
+                <button class="inline-edit-trigger modal-trigger">
+                    <i class="icon-pencil"></i>
+                </button>
+                <div class="inline-edit-editable">
+                    <div class="inline-edit-editable-text" style="min-width: 15px;" contenteditable="true">{{name}}</div>
+                    <span class="inline-edit-actions">
+                        <button class="inline-edit-save icon-checkmark"></button>
+                        <button class="inline-edit-cancel icon-close"></button>
+                    </span>
                 </div>
             </div>
+        </h4>
+        <div class="activity-data-placeholder">
+            {{#with runningDetails}}
+                {{>running-details}}
+            {{/with}}
         </div>
     `);
-
+    
     let template = Handlebars.compile(`
         <div>
-        {{#each activityList}}
-            {{>activity}}
-        {{/each}}
+            {{#each feed}}
+                <div class="widget widget-large widget-activities" style="width: auto; height: auto;">
+                    <div class="widget-header clearfix">
+                        <h2 class="widget-title pull-left">Aktivitet</h2>
+                    </div>
+                    <div class="widget-content">
+                        {{#with activity}}
+                            {{>activity}}
+                        {{/with}}
+                    </div>
+                </div>
+            {{/each}}
         </div>
     `);
 
     browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        $("#extender-placeholder").html(template(request.viewModel));
+        $("#extender-placeholder").html(template(request));
     });
 })(jQuery);

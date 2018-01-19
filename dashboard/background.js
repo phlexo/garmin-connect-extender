@@ -1,4 +1,44 @@
 (function ($) {
+    function getRunningDetails(activity) {
+        return {
+            distance: {
+                name: "Sträcka",
+                value: Qty(`${activity.distance} m`).toPrec('0.01 km').format('km')
+            },
+            duration: {
+                name: "Tid",
+                value: moment.duration(activity.duration, "seconds").format("d[d] h[h]", 1)
+            },
+            calories: {
+                name: "Kalorier",
+                value: activity.calories
+            },
+            averageSpeed: {
+                name: "Tempo (min/km)",
+                value: activity.averageSpeed
+            },
+            elevationGain: {
+                name: "Stigning",
+                value: activity.elevationGain
+            }
+        };
+    }
+
+    function getActivity(activity) {
+        return {
+            id: activity.activityId,
+            name: activity.activityName,
+            type: activity.activityType.typeKey,
+            iconClass: `icon-activity-${activity.activityType.typeKey}`,
+            link: `/modern/activity/${activity.activityId}`,
+            runningDetails: getRunningDetails(activity)
+        };
+    }
+
+    function getSummary() {
+        return null;
+    }
+
     function load(tab) {
         // Årlig status
         // https://connect.garmin.com/modern/proxy/calendar-service/year/2018
@@ -14,45 +54,17 @@
 
         $.ajax({
             url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566", success: function (result) {
-                let viewModel = {
-                    "activityList": []
-                };
-
+                console.log(result);
+                let feed = [];
                 for (let i = 0; i < result.activityList.length; i++) {
-                    viewModel.activityList.push({
-                        id: result.activityList[i].activityId,
-                        name: result.activityList[i].activityName,
-                        type: result.activityList[i].activityType.typeKey,
-                        iconClass: `icon-activity-${result.activityList[i].activityType.typeKey}`,
-                        link: `/modern/activity/${result.activityList[i].activityId}`,
-                        distance: {
-                            name: "Sträcka",
-                            value: Qty(`${result.activityList[i].distance} m`).toPrec('0.01 km').format('km')
-                        },
-                        duration: {
-                            name: "Tid",
-                            value: moment.duration(result.activityList[i].duration, "seconds").format("d[d] h[h]", 1)
-                        },
-                        calories: {
-                            name: "Kalorier",
-                            value: result.activityList[i].calories
-                        },
-                        averageSpeed: {
-                            name: "Tempo (min/km)",
-                            value: result.activityList[i].averageSpeed
-                        },
-                        elevationGain: {
-                            name: "Stigning",
-                            value: result.activityList[i].elevationGain
-                        }
+                    feed.push({
+                        summary: getSummary(),
+                        activity: getActivity(result.activityList[i])
                     });
                 }
-
-                console.log(result);
-                console.log(viewModel);
-
+                console.log(feed);
                 browser.tabs.sendMessage(tab.id, {
-                    viewModel: viewModel
+                    feed: feed
                 });
             }
         });
