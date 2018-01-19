@@ -62,12 +62,6 @@
     `);
 
     browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        try {
-            console.log("Message received from background script");
-            console.log(request);
-            $("#extender-placeholder").html(template(request.viewModel));
-        } catch(error) {
-            console.log(error);
-        }
+        $("#extender-placeholder").html(template(request.viewModel));
     });
 })(jQuery);
