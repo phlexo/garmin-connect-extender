@@ -1,0 +1,1 @@
+define(["require","leaflet"],function(e){var t=e("leaflet"),n=t.TileLayer.extend({getTileUrl:function(e){var t=Garmin.Map.Utils.getHeatMapUrls(e.x,e.y,e.z);return this.getHeatMapUrl(t)},getHeatMapUrl:function(e){}});return n});

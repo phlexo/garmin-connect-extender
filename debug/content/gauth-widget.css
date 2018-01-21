@@ -1,0 +1,5 @@
+#gauth-widget{padding:9px;border:1px solid #ccc;-moz-border-radius:6px;-webkit-border-radius:6px;border-radius:6px;}
+#gauth-widget-frame,#gauth-widget-frame-gauth-widget{width:210px;height:300px;}
+#light_box_fade.LB-black-overlay{display:none;position:absolute;top:0;left:0;background-color:black;z-index:1001;-moz-opacity:.7;opacity:.70;filter:alpha(opacity=70);}
+#gauth-light-box.LB-white-content{display:none;background-color:white;z-index:1002;}
+#liteBoxClose{margin:.5em;float:right;}

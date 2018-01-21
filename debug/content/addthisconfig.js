@@ -1,0 +1,1 @@
+var addthis_config={ui_use_addressbook:!0,ui_cobrand:"Garmin Connect",ui_language:"en"};

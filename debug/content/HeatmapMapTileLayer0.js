@@ -1,0 +1,1 @@
+define(["require","views/utils/LeafletMap/RasterLayers/HeatmapMapTileLayer"],function(e){var t=e("views/utils/LeafletMap/RasterLayers/HeatmapMapTileLayer"),n=t.extend({getHeatMapUrl:function(e){return typeof e!="undefined"&&e!=null?e[0]:""}});return n});

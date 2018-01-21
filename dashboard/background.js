@@ -51,19 +51,25 @@
 
     function getActivity(activity) {
         let viewModel = {
+            title: "Aktivitet",
             id: activity.activityId,
             name: activity.activityName,
             type: activity.activityType.typeKey,
             iconClass: `icon-activity-${activity.activityType.typeKey}`,
             link: `/modern/activity/${activity.activityId}`,
-            ownerProfileImageUrlMedium: activity.ownerProfileImageUrlMedium
+            ownerProfileImageUrlSmall: activity.ownerProfileImageUrlSmall,
+            started: activity.startTimeLocal,
+            completed: null,
+            owner: activity.ownerFullName,
+            ownerUrl: `https://connect.garmin.com/modern/profile/${activity.ownerDisplayName}`,
+            description: activity.description
         };
         switch (activity.activityType.typeKey) {
             case "running":
-                viewModel.runningDetails = getRunningDetails(activity);
+                viewModel.details = getRunningDetails(activity);
                 break;
             default:
-                viewModel.otherDetails = getOtherDetails(activity);
+                viewModel.details = getOtherDetails(activity);
                 break;
         }
         return viewModel;
@@ -71,6 +77,7 @@
 
     function getSummaryForCurrentWeek() {
         return {
+            title: "Summering",
             name: "Denna vecka"
         };
     }
@@ -81,48 +88,69 @@
         };
     }
 
+    function resultToFeed(result) {
+        let feed = [];
+        feed.push({
+            title: "Summering",
+            summary: getSummaryForCurrentWeek()
+        });
+        for (let i = 0; i < result.activityList.length; i++) {
+            if (i%5==4) {
+                feed.push({
+                    title: "Summering",
+                    summary: getSummaryForWeek(17)
+                });
+            }
+            feed.push({
+                title: "Aktivitet",
+                activity: getActivity(result.activityList[i])
+            });
+        }
+        console.log("Result converted to feed.");
+        console.log(feed);
+        return feed;
+    }
+    
     function load(tab) {
         // Årlig status
         // https://connect.garmin.com/modern/proxy/calendar-service/year/2018
-
+        
         // Januari
         // https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0
-
+        
         // Vecka
         // https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0/day/18/start/1
-
+        
         // Enskild aktivitet
         // https://connect.garmin.com/modern/proxy/activity-service/activity/2434047486?_=1516287552093
-
+        
         $.ajax({
             url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566", success: function (result) {
-                let feed = [];
-                feed.push({
-                    title: "Summering",
-                    summary: getSummaryForCurrentWeek()
-                });
-                for (let i = 0; i < result.activityList.length; i++) {
-                    if (i%5==4) {
-                        feed.push({
-                            title: "Summering",
-                            summary: getSummaryForWeek(17)
-                        });
-                    }
-                    feed.push({
-                        title: "Aktivitet",
-                        activity: getActivity(result.activityList[i])
-                    });
-                }
+                console.log("Sending live data.");
+                console.log(result);
                 browser.tabs.sendMessage(tab.id, {
-                    feed: feed
+                    feed: resultToFeed(result)
                 });
             }
         });
     }
 
+    function mock(tab) {
+        console.log("Sending mock data.");
+        console.log(resultMock);
+        browser.tabs.sendMessage(tab.id, {
+            feed: resultToFeed(resultMock)
+        });
+    }
+
     browser.tabs.onUpdated.addListener((id, changeInfo, tab) => {
         if (changeInfo.status == 'complete' && tab.status == 'complete' && tab.url != undefined) {
-            if (tab.url.match(/https?:\/\/connect.garmin.com\/modern\/dashboard\/.*/gi)) {
+            if (tab.url.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi)) {
+                console.log("Debug page has been loaded.")
+                mock(tab);
+            }
+            else if (tab.url.match(/https?:\/\/connect.garmin.com\/modern\/dashboard\/.*/gi)) {
+                console.log("Live page has been loaded.")
                 load(tab);
             }
         }

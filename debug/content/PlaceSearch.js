@@ -1,0 +1,1 @@
+define(["backbone","models/course/Place"],function(e,t){var n=e.Collection.extend({model:t,url:function(){return"/proxy/course-service/namedPlace/find?lat="+this.lat+"&lon="+this.lon+"&text="+this.text+"&language="+this.language+"&count="+this.count},initialize:function(e){this.lat=e.lat,this.lon=e.lon,this.text=e.text,this.language=e.language,this.count=e.count||5}});return n});

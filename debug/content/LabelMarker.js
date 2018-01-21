@@ -1,0 +1,1 @@
+define(["require","leaflet"],function(e){var t=e("leaflet"),n=t.Marker.extend({initialize:function(e,n){t.Marker.prototype.initialize.call(this,e,n),this.label={text:""}},setLabel:function(e){this.label=e},getLabel:function(){return this.label},setTitle:function(e){this._icon.innerHTML=e},setPosition:function(e){this.setLatLng(e)}});return n});

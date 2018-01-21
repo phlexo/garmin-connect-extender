@@ -1,0 +1,1 @@
+define([],function(){return{POLYLINE:{COLOR:null,WEIGHT:4}}});

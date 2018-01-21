@@ -1,0 +1,1 @@
+define([],function(){var e=function(){return this};return e.prototype.fetch=function(){},e});
