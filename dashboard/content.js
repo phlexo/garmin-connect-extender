@@ -5,16 +5,35 @@
             <style>
                 .extension-details-wrapper {
                     display: grid;
-                    grid-template-columns: repeat(6, 1fr);
+                    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
                     grid-gap: 10px;
-                    grid-auto-rows: minmax(100px, auto);
                 }
+                .extension-widget {
+                    display: grid;
+                    grid-template-columns: 40px 50px auto 50px 40px;
+                    grid-template-rows: 25% 100px auto;
+                }
+                .extension-widget-header {
+
+                }
+                .extension-widget-body {
+
+                }
+                .extension-widget-footer {
+                    
+                }
+
             </style>
         `);
         $(".main-body").html(`
             <div id="extender-placeholder"></div>
         `);
     }
+
+    Handlebars.registerPartial('activity2', `
+        <div class="widget extension-widget">
+        </div>
+    `);
 
     Handlebars.registerPartial('activity', `
         <div class="widget widget-large widget-activities" style="width: auto; height: auto;">
