@@ -31,6 +31,7 @@
     }
   },
   "web_accessible_resources": [
-    "dashboard/page.html"
+    "dashboard/page.html",
+    "debug/map.png"
   ]
 }

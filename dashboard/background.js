@@ -71,7 +71,8 @@
             completed: null,
             owner: activity.ownerFullName,
             ownerUrl: `https://connect.garmin.com/modern/profile/${activity.ownerDisplayName}`,
-            description: activity.description
+            description: activity.description,
+            mapImage: browser.extension.getURL("debug/map.png")
         };
         switch (activity.activityType.typeKey) {
             case "running":
