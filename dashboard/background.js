@@ -1,6 +1,15 @@
 (function ($) {
-    function getRunningDetails(activity) {
+    function getExtendedRunningDetails(activity) {
         return {
+            stressScore: {
+                name: "Stresspoäng",
+                value: 100
+            }
+        };
+    }
+
+    function getRunningDetails(activity) {
+        return Object.assign({
             distance: {
                 name: "Sträcka",
                 value: Qty(`${activity.distance} m`).toPrec('0.01 km').format('km')
@@ -21,7 +30,7 @@
                 name: "Stigning",
                 value: activity.elevationGain
             }
-        };
+        }, getExtendedRunningDetails(activity));
     }
 
     function getOtherDetails(activity) {
@@ -78,13 +87,42 @@
     function getSummaryForCurrentWeek() {
         return {
             title: "Summering",
-            name: "Denna vecka"
+            name: "Denna vecka",
+            details: {
+                cycling: {
+                    name: "Cykling",
+                    value: "100km"
+                },
+                running: {
+                    name: "Löpning",
+                    value: "60km"
+                },
+                swimming: {
+                    name: "Simning",
+                    value: "6km"
+                }
+            }
         };
     }
 
     function getSummaryForWeek(week) {
         return {
-            name: `Vecka ${week}`
+            title: "Summering",
+            name: `Vecka ${week}`,
+            details: {
+                cycling: {
+                    name: "Cykling",
+                    value: "100km"
+                },
+                running: {
+                    name: "Löpning",
+                    value: "60km"
+                },
+                swimming: {
+                    name: "Simning",
+                    value: "6km"
+                }
+            }
         };
     }
 

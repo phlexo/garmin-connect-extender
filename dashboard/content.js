@@ -7,6 +7,7 @@
                     display: grid;
                     grid-template-columns: repeat(6, 1fr);
                     grid-gap: 10px;
+                    grid-auto-rows: minmax(100px, auto);
                 }
             </style>
         `);
@@ -54,6 +55,18 @@
                         <span>{{name}}</span>
                     </div>
                 </h4>
+                <div class="activity-data-placeholder">
+                    <div class="extension-details-wrapper">
+                        {{#each details}}
+                            {{#if value}}
+                                <div>
+                                    <div class="h5" style="margin: 0px;">{{value}}</div>
+                                    <span title="{{name}}" class="data-label">{{name}}</span>
+                                </div>
+                            {{/if}}
+                        {{/each}}
+                    </div>
+                </div>
             </div>
         </div>
     `);
