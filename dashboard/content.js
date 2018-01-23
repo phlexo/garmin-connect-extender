@@ -1,4 +1,10 @@
 (function ($) {
+    if (window.hasRun) {
+        console.log("dashboard/content.js has already run.");
+        return;
+    }
+    console.log("dashboard/content.js is loaded.");
+    window.hasRun = true;
 
     if (window.location.href.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi) || window.location.href.match(/https?:\/\/connect.garmin.com\/modern\/dashboard\/.*/gi)) {
         $("head").append(`
@@ -46,13 +52,18 @@
                     grid-template-columns: 1fr auto;
                     align-items: start;
                 }
+                .extension-widget-description {
+                    color: #888;
+                    font-size: 12px;
+                    margin: 0 0 5px 0;
+                }
                 .extension-widget-details {
                     display: grid;
                     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
                     grid-gap: 10px;
                 }
                 .extension-widget-details-value {
-                    font-weight: 300;
+                    font-weight: 400;
                     font-size: 18px;
                 }
                 .extension-widget-details-label {
@@ -84,15 +95,22 @@
                 </div>
             </div>
             <div class="extension-widget-body">
-                <div class="extension-widget-details">
-                    {{#each details}}
-                        {{#if value}}
-                            <div>
-                                <div class="extension-widget-details-value">{{value}}</div>
-                                <span title="{{name}}" class="extension-widget-details-label">{{name}}</span>
-                            </div>
-                        {{/if}}
-                    {{/each}}
+                <div>
+                    {{#if description}}
+                        <div class="extension-widget-description">
+                            {{description}}
+                        </div>
+                    {{/if}}
+                    <div class="extension-widget-details">
+                        {{#each details}}
+                            {{#if value}}
+                                <div>
+                                    <div class="extension-widget-details-value">{{value}}</div>
+                                    <span title="{{name}}" class="extension-widget-details-label">{{name}}</span>
+                                </div>
+                            {{/if}}
+                        {{/each}}
+                    </div>
                 </div>
                 <div>
                     <img src="{{mapImage}}" />

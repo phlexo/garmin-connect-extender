@@ -1,15 +1,24 @@
 (function ($) {
-    function getExtendedRunningDetails(activity) {
-        return {
-            stressScore: {
-                name: "Stresspoäng",
-                value: 100
-            }
-        };
+    console.log("dashboard/background.js is loaded.");
+
+    let activityDetailsCache = {};
+
+    function getIconClass(typeKey) {
+        var tokens = typeKey.split('_');
+        switch (tokens[tokens.length-1]) {
+            case "running":
+                return "icon-activity-running";
+            case "cycling":
+                return "icon-activity-cycling";
+            case "swimming":
+                return "icon-activity-swimming";
+            default:
+                return "icon-activity-other";
+        }
     }
 
     function getRunningDetails(activity) {
-        return Object.assign({
+        return {
             distance: {
                 name: "Sträcka",
                 value: Qty(`${activity.distance} m`).toPrec('0.01 km').format('km')
@@ -29,8 +38,12 @@
             elevationGain: {
                 name: "Stigning",
                 value: activity.elevationGain
+            },
+            stressScore: {
+                name: "Stresspoäng",
+                value: 100
             }
-        }, getExtendedRunningDetails(activity));
+        };
     }
 
     function getOtherDetails(activity) {
@@ -59,12 +72,26 @@
     }
 
     function getActivity(activity) {
+        if (!(activity.activityId in activityDetailsCache)) {
+            console.log(`Activity with id {activity.activityId} not found in the cache, loading activity.`);
+            switch (activity.activityType.typeKey) {
+                case "running":
+                    activityDetailsCache[activity.activityId] = getRunningDetails(activity);
+                    break;
+                default:
+                    activityDetailsCache[activity.activityId] = getOtherDetails(activity);
+                    break;
+            }
+        }
+        else {
+            console.log(`Activity with id {activity.activityId} was found in the cache.`);
+        }
         let viewModel = {
             title: "Aktivitet",
             id: activity.activityId,
             name: activity.activityName,
             type: activity.activityType.typeKey,
-            iconClass: `icon-activity-${activity.activityType.typeKey}`,
+            iconClass: getIconClass(activity.activityType.typeKey),
             link: `/modern/activity/${activity.activityId}`,
             ownerProfileImageUrlSmall: activity.ownerProfileImageUrlSmall,
             started: activity.startTimeLocal,
@@ -72,16 +99,9 @@
             owner: activity.ownerFullName,
             ownerUrl: `https://connect.garmin.com/modern/profile/${activity.ownerDisplayName}`,
             description: activity.description,
-            mapImage: browser.extension.getURL("debug/map.png")
+            mapImage: browser.extension.getURL("debug/map.png"),
+            details: activityDetailsCache[activity.activityId]
         };
-        switch (activity.activityType.typeKey) {
-            case "running":
-                viewModel.details = getRunningDetails(activity);
-                break;
-            default:
-                viewModel.details = getOtherDetails(activity);
-                break;
-        }
         return viewModel;
     }
 
@@ -149,7 +169,7 @@
         console.log(feed);
         return feed;
     }
-    
+
     function load(tab) {
         // Årlig status
         // https://connect.garmin.com/modern/proxy/calendar-service/year/2018
