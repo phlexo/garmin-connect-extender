@@ -223,8 +223,6 @@
                 activity: getActivity(result.activityList[i])
             });
         }
-        console.log("Result converted to feed.");
-        console.log(feed);
         return feed;
     }
 
@@ -241,26 +239,41 @@
         // Enskild aktivitet
         // https://connect.garmin.com/modern/proxy/activity-service/activity/2434047486?_=1516287552093
         
+        console.log("Sending live data.");
         $.ajax({
-            url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566", success: function (result) {
-                console.log("Sending live data.");
+            async: false,
+            url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566",
+            success: function (result) {
+                console.log("Live data received.");
+                console.log(result);
+                console.log("Converting live data to feed.");
+                let feed = resultToFeed(result);
+                console.log("Live result converted to feed.");
+                console.log(feed);
                 func({
-                    feed: resultToFeed(result)
+                    feed: feed
                 });
             }
         });
     }
 
     function sendMockResponse(func) {
-        let mock = new Mock();
         console.log("Sending mock data.");
+        let mock = new Mock();
+        let result = mock.getActivityList();
+        console.log("Mock data received.");
+        console.log(result);
+        console.log("Converting mock data to feed.");
+        let feed = resultToFeed(result);
+        console.log("Mock result converted to feed.");
+        console.log(feed);
         func({
-            feed: resultToFeed(mock.getActivityList())
+            feed: feed
         });
     }
 
     function setGlobalConfiguration(request) {
-        console.log(`Setting time locale to ${request.locale}`);
+        console.log(`Setting time locale to ${request.locale}.`);
         moment.locale(request.locale);
     }
 
