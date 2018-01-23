@@ -19,59 +19,77 @@
 
     function getRunningDetails(activity) {
         let details = {};
-        details.distance = {
-            name: "Sträcka",
-            value: Qty(`${activity.distance} m`).to('km').toPrec(0.01).toString()
-        };
-        details.duration = {
-            name: "Tid",
-            value: moment.duration(activity.duration, 'seconds').format("HH:mm:ss")
-        };
-        details.calories = {
-            name: "Kalorier",
-            value: activity.calories
-        };
-        details.averageSpeed = {
-            name: "Tempo (min/km)",
-            value: Qty(activity.averageSpeed, 'm/s').inverse().to('min/km').toPrec(0.01).toString()
-        };
-        details.elevationGain = {
-            name: "Stigning",
-            value: Qty(activity.elevationGain, 'm').toPrec(0.01).toString()
-        };
+        if (typeof activity.distance === 'number') {
+            details.distance = {
+                name: "Sträcka [km]",
+                value: Qty(activity.distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()
+            };
+        }
+        if (typeof activity.duration === 'number') {
+            details.duration = {
+                name: "Tid",
+                value: moment.duration(activity.duration, 'seconds').format("HH:mm:ss")
+            };
+        }
+        if (typeof activity.calories === 'number') {
+            details.calories = {
+                name: "Kalorier [kcal]",
+                value: activity.calories.toLocaleString()
+            };
+        }
+        if (typeof activity.averageSpeed === 'number') {
+           details.averageSpeed = {
+                name: "Tempo [min/km]",
+                value: moment.duration(Qty(activity.averageSpeed, 'm/s').inverse().to('min/km').toPrec(0.01).scalar, 'minutes').format("m:ss")
+            };
+        }
+        if (typeof activity.elevationGain === 'number') {
+            details.elevationGain = {
+                name: "Stigning [m]",
+                value: Qty(activity.elevationGain, 'm').toPrec(0.01).scalar.toLocaleString()
+            };
+        }
         details.stressScore = {
             name: "Stresspoäng",
-            value: 100
+            value: Number(100).toLocaleString()
         };
         details.trainingEffect = {
             name: "Träningseffekt",
-            value: "3.5/5"
+            value: `${Number(3.5).toLocaleString()}/${Number(5).toLocaleString()}`
         };
         return details;
     }
 
     function getOtherDetails(activity) {
         let details = {};
-        details.distance = {
-            name: "Sträcka",
-            value: Qty(`${activity.distance} m`).to('km').toPrec(0.01).toString()
-        };
-        details.duration = {
-            name: "Tid",
-            value: moment.duration(activity.duration, 'seconds').format("HH:mm:ss")
-        };
-        details.calories = {
-            name: "Kalorier",
-            value: activity.calories
-        };
-        details.averageSpeed = {
-            name: "Hastighet (km/h)",
-            value: Qty(activity.averageSpeed, 'm/s').to('km/h').toPrec(0.01).toString()
-        };
-        if (activity.elevationGain) {
+        if (typeof activity.distance === 'number') {
+            details.distance = {
+                name: "Sträcka [km]",
+                value: Qty(activity.distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()
+            };
+        }
+        if (typeof activity.duration === 'number') {
+            details.duration = {
+                name: "Tid",
+                value: moment.duration(activity.duration, 'seconds').format("HH:mm:ss")
+            };
+        }
+        if (typeof activity.calories === 'number') {
+            details.calories = {
+                name: "Kalorier",
+                value: activity.calories.toLocaleString()
+            };
+        }
+        if (typeof activity.averageSpeed === 'number') {
+            details.averageSpeed = {
+                name: "Hastighet [km/h]",
+                value: Qty(activity.averageSpeed, 'm/s').to('km/h').toPrec(0.01).scalar.toLocaleString()
+            };
+        }
+        if (typeof activity.elevationGain === 'number') {
             details.elevationGain = {
-                name: "Stigning",
-                value: Qty(activity.elevationGain, 'm').toPrec(0.01).toString()
+                name: "Stigning [m]",
+                value: Qty(activity.elevationGain, 'm').toPrec(0.01).scalar.toLocaleString()
             };
         }
         return details;
