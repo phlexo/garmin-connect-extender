@@ -174,7 +174,7 @@
         return feed;
     }
 
-    function load(tab) {
+    function sendResponse(func) {
         // Årlig status
         // https://connect.garmin.com/modern/proxy/calendar-service/year/2018
         
@@ -190,31 +190,31 @@
         $.ajax({
             url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566", success: function (result) {
                 console.log("Sending live data.");
-                browser.tabs.sendMessage(tab.id, {
+                func({
                     feed: resultToFeed(result)
                 });
             }
         });
     }
 
-    function loadMock(tab) {
+    function sendMockResponse(func) {
         let mock = new Mock();
         console.log("Sending mock data.");
-        browser.tabs.sendMessage(tab.id, {
+        func({
             feed: resultToFeed(mock.getActivityList())
         });
     }
 
-    browser.tabs.onUpdated.addListener((id, changeInfo, tab) => {
-        if (changeInfo.status == 'complete' && tab.status == 'complete' && tab.url != undefined) {
-            if (tab.url.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi)) {
-                console.log("Debug page has been loaded.")
-                loadMock(tab);
-            }
-            else if (tab.url.match(/https?:\/\/connect.garmin.com\/modern\/dashboard\/.*/gi)) {
-                console.log("Live page has been loaded.")
-                load(tab);
-            }
+    browser.runtime.onMessage.addListener((request, sender, func) => {
+        console.log(`Message received from content script.`);
+        console.log(request);
+        if (sender.tab.url.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi)) {
+            console.log("Debug page has been loaded.");
+            sendMockResponse(func);
+        }
+        else if (sender.tab.url.match(/https?:\/\/connect.garmin.com\/modern\/dashboard\/.*/gi)) {
+            console.log("Live page has been loaded.");
+            sendResponse(func);
         }
     });
 
