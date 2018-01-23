@@ -201,7 +201,7 @@
         let mock = new Mock();
         console.log("Sending mock data.");
         browser.tabs.sendMessage(tab.id, {
-            feed: resultToFeed(mock.getResult())
+            feed: resultToFeed(mock.getActivityList())
         });
     }
 

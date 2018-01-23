@@ -11,7 +11,7 @@
     "128": "icons/gce-128.png"
   },
   "background": {
-    "scripts": ["utility/jquery-3.2.1.min.js", "debug/result-mock.js", "utility/quantities.js", "utility/moment.js", "utility/moment-duration-format.js", "dashboard/background.js"]
+    "scripts": ["utility/jquery-3.2.1.min.js", "debug/mock.js", "utility/quantities.js", "utility/moment.js", "utility/moment-duration-format.js", "dashboard/background.js"]
   },
   "content_scripts": [
     {"matches": ["file:///*/debug/garmin-connect-extender.html", "*://connect.garmin.com/modern*"], "js": ["utility/jquery-3.2.1.min.js", "fullscreen-maps/content.js", "utility/handlebars-v4.0.11.js", "dashboard/content.js"]}

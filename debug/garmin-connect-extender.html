@@ -7,6 +7,23 @@
         <link rel="stylesheet" type="text/css" href="content/style_002.css">
         <link rel="stylesheet" type="text/css" href="content/style_003.css">
         <link rel="stylesheet" type="text/css" href="content/css.css">
+        <script>
+            VIEWER_USERPREFERENCES = JSON.parse("{\"displayName\":\"phlexo\",\"preferredLocale\":\"sv\",\"measurementSystem\":\"metric\",\"firstDayOfWeek\":{\"dayId\":3,\"dayName\":\"monday\",\"sortOrder\":3,\"isPossibleFirstDay\":true},\"numberFormat\":\"decimal_period\",\"timeFormat\":{\"formatId\":33,\"formatKey\":\"time_twenty_four_hr\",\"minFraction\":0,\"maxFraction\":0,\"groupingUsed\":false,\"displayFormat\":\"H:mm\"},\"dateFormat\":{\"formatId\":25,\"formatKey\":\"yyyymmdd\",\"minFraction\":0,\"maxFraction\":0,\"groupingUsed\":false,\"displayFormat\":\"EEE, yyyy MMM d\"},\"powerFormat\":{\"formatId\":30,\"formatKey\":\"watt\",\"minFraction\":0,\"maxFraction\":0,\"groupingUsed\":true,\"displayFormat\":null},\"heartRateFormat\":{\"formatId\":19,\"formatKey\":\"percentMax\",\"minFraction\":0,\"maxFraction\":0,\"groupingUsed\":false,\"displayFormat\":\"yyyy\"},\"timeZone\":\"Europe/Paris\"}");
+            VIEWER_SOCIAL_PROFILE = JSON.parse("{\"id\":1854761,\"profileId\":3840353,\"displayName\":\"phlexo\",\"fullName\":\"Andreas Lindström\",\"userName\":\"kandreasl\",\"profileImageUrlLarge\":\"https://s3.amazonaws.com/garmin-connect-prod/profile_images/d1db74a9-9dc8-4baa-94d5-c5c1599ca74e-3840353.jpg\",\"profileImageUrlMedium\":\"https://s3.amazonaws.com/garmin-connect-prod/profile_images/ee6999c1-1fdf-4cd1-a65a-e2fa5909ae33-3840353.jpg\",\"profileImageUrlSmall\":\"https://s3.amazonaws.com/garmin-connect-prod/profile_images/e0e1038d-a1bc-4bfc-9f68-091708cf0df2-3840353.jpg\",\"location\":\"Östersund\",\"facebookUrl\":null,\"twitterUrl\":null,\"personalWebsite\":null,\"motivation\":1,\"bio\":null,\"primaryActivity\":\"triathlon\",\"favoriteActivityTypes\":[\"running\",\"cycling\",\"swimming\",\"triathlon\",\"other\"],\"runningTrainingSpeed\":3.3333333,\"cyclingTrainingSpeed\":8.333333,\"favoriteCyclingActivityTypes\":[\"road\"],\"cyclingClassification\":\"open\",\"cyclingMaxAvgPower\":280.0,\"swimmingTrainingSpeed\":1.0,\"profileVisibility\":\"groups\",\"activityStartVisibility\":\"private\",\"activityMapVisibility\":\"public\",\"courseVisibility\":\"public\",\"activityHeartRateVisibility\":\"public\",\"activityPowerVisibility\":\"public\",\"badgeVisibility\":\"private\",\"showAge\":true,\"showWeight\":true,\"showHeight\":true,\"showWeightClass\":true,\"showAgeRange\":false,\"showGender\":true,\"showActivityClass\":false,\"showVO2Max\":false,\"showPersonalRecords\":true,\"showLast12Months\":true,\"showLifetimeTotals\":true,\"showUpcomingEvents\":false,\"showRecentFavorites\":true,\"showRecentDevice\":true,\"showRecentGear\":true,\"showBadges\":true,\"otherActivity\":\"Längdskidåkning\",\"otherPrimaryActivity\":null,\"otherMotivation\":null,\"userRoles\":[\"ROLE_CONNECTUSER\",\"ROLE_FITNESS_USER\",\"ROLE_WELLNESS_USER\",\"ROLE_CONNECT_2_USER\"],\"nameApproved\":true,\"userProfileFullName\":\"Andreas Lindström\",\"makeGolfScorecardsPrivate\":false,\"allowGolfLiveScoring\":false,\"allowGolfScoringByConnections\":true,\"userLevel\":1,\"userPoint\":0,\"levelUpdateDate\":\"2017-04-19T09:56:56.0\",\"levelIsViewed\":false,\"levelPointThreshold\":20,\"userPro\":false}");
+            var VIEWER_DASHBOARDS = JSON.parse("[{\"dashboardId\":334395,\"ownerId\":3840353,\"dashboardTitle\":\"Dashboard\",\"dashboardTitleKey\":\"fitness_dashboard\",\"dashboardOrder\":0}]");
+            var appConfig = JSON.parse("{\"routes\":[\"routes/fitness\",\"web-react/js/routes\",\"golf/js/routes/GolfRoutes\",\"marine/js/routes/MarineRoutes\",\"corp-wellness/js/routes/MainRoutes\"],\"propertyFiles\":[\"/main/js/properties/main_container/main_container\",\"/main/js/properties/widgets/widgets\",\"/main/js/golf/js/properties/golf_main\",\"/main/js/marine/js/properties/marine_main\",\"/main/js/corp-wellness/js/properties/corpwellness_main\"]}");
+            var queueNotificationTimeout = 60000;
+            var queuePollRate = 5000;
+            var USER_MIGRATED = false;
+            var ERROR_VIEW = null;
+            var USER_PROFILE = null;
+            var SYSTEM_TIME_GMT = 1516707107277;
+            var ENABLE_ADRUM = true;
+            var SESSION_LENGTH = 900 * 1000;
+            var GAUTH_HOST = 'https://sso.garmin.com/sso';
+            var GARMIN_APP_URL = 'https://apps.garmin.com/connect?locale={locale}';
+            var WEB_TOKEN = null !== null ? "null" : "";
+        </script>
     </head>
     <body>
         <div class="main-body">
