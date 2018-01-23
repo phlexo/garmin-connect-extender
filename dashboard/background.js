@@ -28,7 +28,7 @@
         if (typeof activity.duration === 'number') {
             details.duration = {
                 name: "Tid",
-                value: moment.duration(activity.duration, 'seconds').format("HH:mm:ss")
+                value: moment.duration(activity.duration, 'seconds').format('HH:mm:ss')
             };
         }
         if (typeof activity.calories === 'number') {
@@ -40,7 +40,7 @@
         if (typeof activity.averageSpeed === 'number') {
            details.averageSpeed = {
                 name: "Tempo [min/km]",
-                value: moment.duration(Qty(activity.averageSpeed, 'm/s').inverse().to('min/km').toPrec(0.01).scalar, 'minutes').format("m:ss")
+                value: moment.duration(Qty(activity.averageSpeed, 'm/s').inverse().to('min/km').toPrec(0.01).scalar, 'minutes').format('m:ss')
             };
         }
         if (typeof activity.elevationGain === 'number') {
@@ -49,14 +49,35 @@
                 value: Qty(activity.elevationGain, 'm').toPrec(0.01).scalar.toLocaleString()
             };
         }
-        details.stressScore = {
-            name: "Stresspoäng",
-            value: Number(100).toLocaleString()
-        };
-        details.trainingEffect = {
-            name: "Träningseffekt",
-            value: `${Number(3.5).toLocaleString()}/${Number(5).toLocaleString()}`
-        };
+        return details;
+    }
+
+    function getSwimmingDetails(activity) {
+        let details = {};
+        if (typeof activity.distance === 'number') {
+            details.distance = {
+                name: "Sträcka [km]",
+                value: Qty(activity.distance, 'm').toPrec(1).scalar.toLocaleString()
+            };
+        }
+        if (typeof activity.duration === 'number') {
+            details.duration = {
+                name: "Tid",
+                value: moment.duration(activity.duration, 'seconds').format('HH:mm:ss')
+            };
+        }
+        if (typeof activity.calories === 'number') {
+            details.calories = {
+                name: "Kalorier",
+                value: activity.calories.toLocaleString()
+            };
+        }
+        if (typeof activity.averageSpeed === 'number') {
+            details.averageSpeed = {
+                name: "Hastighet [min/100m]",
+                value: moment.duration(Qty(activity.averageSpeed, 'm/s').inverse().toPrec(0.01).scalar*100, 'seconds').format('m:ss')
+            };
+        }
         return details;
     }
 
@@ -98,9 +119,13 @@
     function getActivity(activity) {
         if (!(activity.activityId in activityDetailsCache)) {
             console.log(`Activity with id ${activity.activityId} not found in the cache, loading activity.`);
-            switch (activity.activityType.typeKey) {
+            var tokens = activity.activityType.typeKey.split('_');
+            switch (tokens[tokens.length-1]) {
                 case "running":
                     activityDetailsCache[activity.activityId] = getRunningDetails(activity);
+                    break;
+                case "swimming":
+                    activityDetailsCache[activity.activityId] = getSwimmingDetails(activity);
                     break;
                 default:
                     activityDetailsCache[activity.activityId] = getOtherDetails(activity);
