@@ -56,7 +56,7 @@
         let details = {};
         if (typeof activity.distance === 'number') {
             details.distance = {
-                name: "Sträcka [km]",
+                name: "Sträcka [m]",
                 value: Qty(activity.distance, 'm').toPrec(1).scalar.toLocaleString()
             };
         }
