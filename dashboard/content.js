@@ -1,24 +1,25 @@
 (function ($) {
-    if (window.hasRun) {
-        console.log("dashboard/content.js has already run.");
-        return;
-    }
     console.log("dashboard/content.js is loaded.");
-    window.hasRun = true;
 
     if (window.location.href.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi) || window.location.href.match(/https?:\/\/connect.garmin.com\/modern\/dashboard\/.*/gi)) {
         $("head").append(`
             <style>
+                .extension-summary {
+                    background: linear-gradient(141deg, #0fb8ad 0%, #1fc8db 20%, #2cb5e8 34%);
+                }
                 .extension-widget {
                     margin: 0 9px 20px 9px;
                     padding: 11px 15px;
                     border: 1px solid #e5e5e5;
                     border-radius: 3px;
+                    overflow: hidden;
                     font-family: 'Open Sans','HelveticaNeue-Light','Helvetica Neue Light','Helvetica Neue',Helvetica,Arial,sans-serif;
                 }
                 .extension-widget-header {
-                    display: grid;
-                    grid-template-columns: 1fr auto;
+                    display: flex;
+                }
+                .extension-widget-header div:first-child {
+                    flex-grow: 1;
                 }
                 .extension-widget-identifier {
                     height: 26px;
@@ -48,9 +49,10 @@
                     white-space: nowrap;
                 }
                 .extension-widget-body {
-                    display: grid;
-                    grid-template-columns: 1fr auto;
-                    align-items: start;
+                    display: flex;
+                }
+                .extension-widget-body div:first-child {
+                    flex-grow: 1;
                 }
                 .extension-widget-description {
                     color: #888;
@@ -59,7 +61,7 @@
                 }
                 .extension-widget-details {
                     display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
                     grid-gap: 10px;
                 }
                 .extension-widget-details-value {
@@ -70,8 +72,6 @@
                     color: #888;
                     font-size: 12px;
                     vertical-align: middle;
-                }
-                .extension-widget-footer {
                 }
             </style>
         `);
@@ -87,7 +87,7 @@
                     <h2>{{title}}</h2>
                     <div>
                         <i class="{{iconClass}} extension-widget-identifier"></i>
-                        <h4><a href="{{link}}" title="{{name}}">{{name}}</a></h4>
+                        <h4><a href="{{link}}">{{name}}</a></h4>
                     </div>
                 </div>
                 <div>
@@ -96,11 +96,14 @@
             </div>
             <div class="extension-widget-body">
                 <div>
-                    {{#if description}}
-                        <div class="extension-widget-description">
-                            {{description}}
-                        </div>
-                    {{/if}}
+                    <div class="extension-widget-description">
+                        {{#if description}}
+                            <a src="#">Edit description</a>
+                            <span>{{description}}</span>
+                        {{else}}
+                            <a src="#">Add description</a>
+                        {{/if}}
+                    </div>
                     <div class="extension-widget-details">
                         {{#each details}}
                             {{#if value}}
@@ -120,7 +123,7 @@
     `);
 
     Handlebars.registerPartial('summary', `
-        <div class="extension-widget">
+        <div class="extension-widget extension-summary">
             <div class="extension-widget-header">
                 <div>
                     <h2>{{title}}</h2>
