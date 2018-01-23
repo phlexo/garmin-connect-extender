@@ -42,6 +42,10 @@
             stressScore: {
                 name: "Stresspoäng",
                 value: 100
+            },
+            trainingEffect: {
+                name: "Träningseffekt",
+                value: "3.5/5"
             }
         };
     }
@@ -186,7 +190,6 @@
         $.ajax({
             url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566", success: function (result) {
                 console.log("Sending live data.");
-                console.log(result);
                 browser.tabs.sendMessage(tab.id, {
                     feed: resultToFeed(result)
                 });
@@ -194,11 +197,11 @@
         });
     }
 
-    function mock(tab) {
+    function loadMock(tab) {
+        let mock = new Mock();
         console.log("Sending mock data.");
-        console.log(resultMock);
         browser.tabs.sendMessage(tab.id, {
-            feed: resultToFeed(resultMock)
+            feed: resultToFeed(mock.getResult())
         });
     }
 
@@ -206,7 +209,7 @@
         if (changeInfo.status == 'complete' && tab.status == 'complete' && tab.url != undefined) {
             if (tab.url.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi)) {
                 console.log("Debug page has been loaded.")
-                mock(tab);
+                loadMock(tab);
             }
             else if (tab.url.match(/https?:\/\/connect.garmin.com\/modern\/dashboard\/.*/gi)) {
                 console.log("Live page has been loaded.")
