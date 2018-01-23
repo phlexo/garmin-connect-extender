@@ -77,7 +77,7 @@
 
     function getActivity(activity) {
         if (!(activity.activityId in activityDetailsCache)) {
-            console.log(`Activity with id {activity.activityId} not found in the cache, loading activity.`);
+            console.log(`Activity with id ${activity.activityId} not found in the cache, loading activity.`);
             switch (activity.activityType.typeKey) {
                 case "running":
                     activityDetailsCache[activity.activityId] = getRunningDetails(activity);
@@ -88,31 +88,39 @@
             }
         }
         else {
-            console.log(`Activity with id {activity.activityId} was found in the cache.`);
+            console.log(`Activity with id ${activity.activityId} was found in the cache.`);
         }
-        let viewModel = {
+        let started = moment(activity.startTimeLocal);
+        let completed = moment(activity.startTimeLocal).add(activity.duration, 'seconds');
+        let timePeriod = `${started.format('LLLL')} - `;
+        if (started.isSame(completed, 'day')) {
+            timePeriod += completed.format('LT');
+        }
+        else {
+            timePeriod += completed.format('LLLL');
+        }
+        return {
             title: "Aktivitet",
             id: activity.activityId,
             name: activity.activityName,
             type: activity.activityType.typeKey,
             iconClass: getIconClass(activity.activityType.typeKey),
-            link: `/modern/activity/${activity.activityId}`,
+            activityUrl: `/modern/activity/${activity.activityId}`,
             ownerProfileImageUrlSmall: activity.ownerProfileImageUrlSmall,
-            started: activity.startTimeLocal,
-            completed: null,
+            timePeriod: timePeriod,
             owner: activity.ownerFullName,
-            ownerUrl: `https://connect.garmin.com/modern/profile/${activity.ownerDisplayName}`,
+            ownerUrl: `/modern/profile/${activity.ownerDisplayName}`,
             description: activity.description,
             mapImage: browser.extension.getURL("debug/map.png"),
             details: activityDetailsCache[activity.activityId]
         };
-        return viewModel;
     }
 
     function getSummaryForCurrentWeek() {
         return {
             title: "Summering",
             name: "Denna vecka",
+            timePeriod: "not yet impl.",
             details: {
                 cycling: {
                     name: "Cykling",
@@ -134,6 +142,7 @@
         return {
             title: "Summering",
             name: `Vecka ${week}`,
+            timePeriod: "not yet impl.",
             details: {
                 cycling: {
                     name: "Cykling",
@@ -205,9 +214,15 @@
         });
     }
 
+    function setGlobalConfiguration(request) {
+        console.log(`Setting time locale to ${request.locale}`);
+        moment.locale(request.locale);
+    }
+
     browser.runtime.onMessage.addListener((request, sender, func) => {
         console.log(`Message received from content script.`);
         console.log(request);
+        setGlobalConfiguration(request);
         if (sender.tab.url.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi)) {
             console.log("Debug page has been loaded.");
             sendMockResponse(func);

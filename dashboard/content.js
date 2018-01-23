@@ -5,14 +5,14 @@
         <div class="extension-widget">
             <div class="extension-widget-header">
                 <div>
-                    <h2>{{title}}</h2>
+                    <h2>{{title}} &lt;{{timePeriod}}&gt;</h2>
                     <div>
                         <i class="{{iconClass}} extension-widget-identifier"></i>
-                        <h4><a href="{{link}}">{{name}}</a></h4>
+                        <h4><a href="{{activityUrl}}">{{name}}</a></h4>
                     </div>
                 </div>
-                <div>
-                    <img src="{{ownerProfileImageUrlSmall}}" />
+                <div class="extender-widget-profile-image">
+                    <a href="{{ownerUrl}}"><img src="{{ownerProfileImageUrlSmall}}" /></a>
                 </div>
             </div>
             <div class="extension-widget-body">
@@ -47,7 +47,7 @@
         <div class="extension-widget extension-summary">
             <div class="extension-widget-header">
                 <div>
-                    <h2>{{title}}</h2>
+                    <h2>{{title}} &lt;{{timePeriod}}&gt;</h2>
                     <h4><a href="{{link}}" title="{{name}}">{{name}}</a></h4>
                 </div>
                 <div>
@@ -101,6 +101,12 @@
                 }
                 .extension-widget-header div:first-child {
                     flex-grow: 1;
+                }
+                .extender-widget-profile-image {
+                    margin: 0px 0px 5px 0px;
+                    border: 1px solid #e5e5e5;
+                    border-radius: 10px;
+                    overflow: hidden;
                 }
                 .extension-widget-identifier {
                     height: 26px;
