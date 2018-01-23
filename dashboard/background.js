@@ -18,61 +18,63 @@
     }
 
     function getRunningDetails(activity) {
-        return {
-            distance: {
-                name: "Sträcka",
-                value: Qty(`${activity.distance} m`).toPrec('0.01 km').format('km')
-            },
-            duration: {
-                name: "Tid",
-                value: moment.duration(activity.duration, "seconds").format("d[d] h[h]", 1)
-            },
-            calories: {
-                name: "Kalorier",
-                value: activity.calories
-            },
-            averageSpeed: {
-                name: "Tempo (min/km)",
-                value: activity.averageSpeed
-            },
-            elevationGain: {
-                name: "Stigning",
-                value: activity.elevationGain
-            },
-            stressScore: {
-                name: "Stresspoäng",
-                value: 100
-            },
-            trainingEffect: {
-                name: "Träningseffekt",
-                value: "3.5/5"
-            }
+        let details = {};
+        details.distance = {
+            name: "Sträcka",
+            value: Qty(`${activity.distance} m`).to('km').toPrec(0.01).toString()
         };
+        details.duration = {
+            name: "Tid",
+            value: moment.duration(activity.duration, 'seconds').format("HH:mm:ss")
+        };
+        details.calories = {
+            name: "Kalorier",
+            value: activity.calories
+        };
+        details.averageSpeed = {
+            name: "Tempo (min/km)",
+            value: Qty(activity.averageSpeed, 'm/s').inverse().to('min/km').toPrec(0.01).toString()
+        };
+        details.elevationGain = {
+            name: "Stigning",
+            value: Qty(activity.elevationGain, 'm').toPrec(0.01).toString()
+        };
+        details.stressScore = {
+            name: "Stresspoäng",
+            value: 100
+        };
+        details.trainingEffect = {
+            name: "Träningseffekt",
+            value: "3.5/5"
+        };
+        return details;
     }
 
     function getOtherDetails(activity) {
-        return {
-            distance: {
-                name: "Sträcka",
-                value: Qty(`${activity.distance} m`).toPrec('0.01 km').format('km')
-            },
-            duration: {
-                name: "Tid",
-                value: moment.duration(activity.duration, "seconds").format("d[d] h[h]", 1)
-            },
-            calories: {
-                name: "Kalorier",
-                value: activity.calories
-            },
-            averageSpeed: {
-                name: "Hastighet (km/h)",
-                value: activity.averageSpeed
-            },
-            elevationGain: {
-                name: "Stigning",
-                value: activity.elevationGain
-            }
+        let details = {};
+        details.distance = {
+            name: "Sträcka",
+            value: Qty(`${activity.distance} m`).to('km').toPrec(0.01).toString()
         };
+        details.duration = {
+            name: "Tid",
+            value: moment.duration(activity.duration, 'seconds').format("HH:mm:ss")
+        };
+        details.calories = {
+            name: "Kalorier",
+            value: activity.calories
+        };
+        details.averageSpeed = {
+            name: "Hastighet (km/h)",
+            value: Qty(activity.averageSpeed, 'm/s').to('km/h').toPrec(0.01).toString()
+        };
+        if (activity.elevationGain) {
+            details.elevationGain = {
+                name: "Stigning",
+                value: Qty(activity.elevationGain, 'm').toPrec(0.01).toString()
+            };
+        }
+        return details;
     }
 
     function getActivity(activity) {
