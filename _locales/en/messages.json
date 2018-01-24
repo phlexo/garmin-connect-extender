@@ -1,0 +1,26 @@
+{
+    "extensionName": {
+        "message": "Garmin Connect Extension"
+    },
+    "extensionDescription": {
+        "message": "TODO"
+    },
+    "activity": {
+        "message": "Activity"
+    },
+    "summary": {
+        "message": "Summary"
+    },
+    "activityRunning": {
+        "message": "Running"
+    },
+    "activityCycling": {
+        "message": "Cycling"
+    },
+    "activitySwimming": {
+        "message": "Swimming"
+    },
+    "activityOther": {
+        "message": "Other"
+    }
+}

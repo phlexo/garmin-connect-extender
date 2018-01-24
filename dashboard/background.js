@@ -1,6 +1,13 @@
 (function ($) {
     console.log("dashboard/background.js is loaded.");
 
+    browser.i18n.getAcceptLanguages().then((languages) => {
+        if (languages.length > 0) {
+            console.log(`Setting locale for moment.js to ${languages[0]}.`);
+            moment.locale(languages[0]);
+        }
+    });
+
     let activityDetailsCache = {};
 
     function getIconClass(typeKey) {
@@ -145,7 +152,7 @@
             timePeriod += completed.format('LLLL');
         }
         return {
-            title: "Aktivitet",
+            title: browser.i18n.getMessage("activity"),
             id: activity.activityId,
             name: activity.activityName,
             type: activity.activityType.typeKey,
@@ -163,7 +170,7 @@
 
     function getSummaryForCurrentWeek() {
         return {
-            title: "Summering",
+            title: browser.i18n.getMessage("summary"),
             name: "Denna vecka",
             timePeriod: "not yet impl.",
             details: {
@@ -185,7 +192,7 @@
 
     function getSummaryForWeek(week) {
         return {
-            title: "Summering",
+            title: browser.i18n.getMessage("summary"),
             name: `Vecka ${week}`,
             timePeriod: "not yet impl.",
             details: {
@@ -272,15 +279,9 @@
         });
     }
 
-    function setGlobalConfiguration(request) {
-        console.log(`Setting time locale to ${request.locale}.`);
-        moment.locale(request.locale);
-    }
-
     browser.runtime.onMessage.addListener((request, sender, func) => {
         console.log(`Message received from content script.`);
         console.log(request);
-        setGlobalConfiguration(request);
         if (sender.tab.url.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi)) {
             console.log("Debug page has been loaded.");
             sendMockResponse(func);

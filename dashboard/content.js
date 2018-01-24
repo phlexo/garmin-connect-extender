@@ -165,12 +165,13 @@
         $(".main-body").html(`
             <div id="extender-placeholder"></div>
         `);
-        let request = {
-            displayName: window.content.document.defaultView.wrappedJSObject.VIEWER_USERPREFERENCES.displayName,
-            locale: window.content.document.defaultView.wrappedJSObject.VIEWER_USERPREFERENCES.preferredLocale,
-            timeZone: window.content.document.defaultView.wrappedJSObject.VIEWER_USERPREFERENCES.timeZone,
-            cyclingFtp: window.content.document.defaultView.wrappedJSObject.VIEWER_SOCIAL_PROFILE.cyclingMaxAvgPower
-        };
+        let request = {}
+        try {
+            request.displayName = window.content.document.defaultView.wrappedJSObject.VIEWER_USERPREFERENCES.displayName;
+        }
+        catch (error) {
+            console.log(error);
+        }
         console.log("Sending message to background script.");
         console.log(request);
         browser.runtime.sendMessage(request).then((response) => {

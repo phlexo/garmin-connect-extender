@@ -1,7 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "Garmin Connect Extender",
-  "description": "",
+  "default_locale": "en",
+  "name": "__MSG_extensionName__",
+  "description": "__MSG_extensionDescription__",
   "version": "1.0.6",
   "homepage_url": "https://github.com/phlexo/garmin-connect-extender/",
   "icons": {
