@@ -48,21 +48,21 @@
             <div class="extension-widget-header">
                 <div>
                     <h2>{{title}} &lt;{{timePeriod}}&gt;</h2>
-                    <h4><a href="{{link}}" title="{{name}}">{{name}}</a></h4>
-                </div>
-                <div>
-                    <img src="{{ownerProfileImageUrlSmall}}" />
                 </div>
             </div>
             <div class="extension-widget-body">
                 <div class="extension-widget-details">
-                    {{#each details}}
-                        {{#if value}}
-                            <div>
-                                <div class="extension-widget-details-value">{{value}}</div>
-                                <span title="{{name}}" class="extension-widget-details-label">{{name}}</span>
+                    {{#each activities}}
+                        <div>
+                            <div class="extension-widget-details-value">
+                                {{#each details}}
+                                    <div>
+                                        {{this}}
+                                    </div>
+                                {{/each}}
                             </div>
-                        {{/if}}
+                            <span title="{{name}}" class="extension-widget-details-label">{{name}}</span>
+                        </div>
                     {{/each}}
                 </div>
             </div>
@@ -144,12 +144,12 @@
                 .extension-widget-description {
                     color: #888;
                     font-size: 12px;
-                    margin: 0 0 5px 0;
                 }
                 .extension-widget-details {
                     display: grid;
                     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
                     grid-gap: 10px;
+                    margin: 5px 0 0 0;
                 }
                 .extension-widget-details-value {
                     font-weight: 400;

@@ -11,6 +11,9 @@
     "summary": {
         "message": "Summary"
     },
+    "week": {
+        "message": "week"
+    },
     "activityRunning": {
         "message": "Running"
     },

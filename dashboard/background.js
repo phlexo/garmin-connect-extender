@@ -206,62 +206,121 @@
         };
     }
 
-    function getSummaryForCurrentWeek() {
-        return {
-            title: browser.i18n.getMessage("summary"),
-            name: "Denna vecka",
-            timePeriod: "not yet impl.",
-            details: {
-                cycling: {
-                    name: browser.i18n.getMessage("activityCycling"),
-                    value: "100km"
-                },
-                running: {
-                    name: browser.i18n.getMessage("activityRunning"),
-                    value: "60km"
-                },
-                swimming: {
-                    name: browser.i18n.getMessage("activitySwimming"),
-                    value: "6km"
+    function getSummaryForWeek(weekNumber, year, weekName, result) {
+        let summary = {};
+        for (let i = 0; i < result.activityList.length; i++) {
+            let tempWeekName = moment(result.activityList[i].startTimeLocal).format('Y_w');
+            if (weekName === tempWeekName) {
+                let tokens = result.activityList[i].activityType.typeKey.split('_');
+                let activityType = tokens[tokens.length-1];
+                switch (activityType) {
+                    case "running":
+                        if (summary.running === undefined) {
+                            summary.running = {
+                                duration: result.activityList[i].duration,
+                                distance: result.activityList[i].distance
+                            };
+                        }
+                        else {
+                            summary.running.duration += result.activityList[i].duration;
+                            summary.running.distance += result.activityList[i].distance;
+                        }
+                        break;
+                    case "cycling":
+                        if (summary.cycling === undefined) {
+                            summary.cycling = {
+                                duration: result.activityList[i].duration,
+                                distance: result.activityList[i].distance
+                            };
+                        }
+                        else {
+                            summary.cycling.duration += result.activityList[i].duration;
+                            summary.cycling.distance += result.activityList[i].distance;
+                        }
+                        break;
+                    case "swimming":
+                        if (summary.swimming === undefined) {
+                            summary.swimming = {
+                                duration: result.activityList[i].duration,
+                                distance: result.activityList[i].distance
+                            };
+                        }
+                        else {
+                            summary.swimming.duration += result.activityList[i].duration;
+                            summary.swimming.distance += result.activityList[i].distance;
+                        }
+                        break;
+                    default:
+                        if (summary.other === undefined) {
+                            summary.other = {
+                                duration: result.activityList[i].duration,
+                                distance: result.activityList[i].distance
+                            };
+                        }
+                        else {
+                            summary.other.duration += result.activityList[i].duration;
+                            summary.other.distance += result.activityList[i].distance;
+                        }
+                        break;
                 }
             }
-        };
-    }
-
-    function getSummaryForWeek(week) {
-        return {
+        }
+        let viewModel = {
             title: browser.i18n.getMessage("summary"),
-            name: `Vecka ${week}`,
-            timePeriod: "not yet impl.",
-            details: {
-                cycling: {
-                    name: browser.i18n.getMessage("activityCycling"),
-                    value: "100km"
-                },
-                running: {
-                    name: browser.i18n.getMessage("activityRunning"),
-                    value: "60km"
-                },
-                swimming: {
-                    name: browser.i18n.getMessage("activitySwimming"),
-                    value: "6km"
-                }
-            }
+            timePeriod: `${browser.i18n.getMessage("week")} ${weekNumber} ${year}`,
+            activities: {}
         };
+        if (summary.swimming != undefined) {
+            viewModel.activities.swimming = {
+                name: `${browser.i18n.getMessage("activitySwimming")}`,
+                details: [
+                    `${moment.duration(summary.swimming.duration, 'seconds').format("HH:mm:ss")}`,
+                    `${Qty(summary.swimming.distance, 'm').toPrec(1).scalar.toLocaleString()} m`
+                ]
+            };
+        }
+        if (summary.running != undefined) {
+            viewModel.activities.running = {
+                name: `${browser.i18n.getMessage("activityRunning")}`,
+                details: [
+                    `${moment.duration(summary.running.duration, 'seconds').format("HH:mm:ss")}`,
+                    `${Qty(summary.running.distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
+                ]
+            };
+        }
+        if (summary.cycling != undefined) {
+            viewModel.activities.cycling = {
+                name: `${browser.i18n.getMessage("activityCycling")}`,
+                details: [
+                    `${moment.duration(summary.cycling.duration, 'seconds').format("HH:mm:ss")}`,
+                    `${Qty(summary.cycling.distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
+                ]
+            };
+        }
+        if (summary.other != undefined) {
+            viewModel.activities.other = {
+                name: `${browser.i18n.getMessage("activityOther")}`,
+                details: [
+                    `${moment.duration(summary.other.duration, 'seconds').format("HH:mm:ss")}`,
+                    `${Qty(summary.other.distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
+                ]
+            };
+        }
+        return viewModel;
     }
 
     function convertResultToFeed(result) {
         let feed = [];
-        feed.push({
-            title: "Summering",
-            summary: getSummaryForCurrentWeek()
-        });
+        let weekName = null;
         for (let i = 0; i < result.activityList.length; i++) {
-            if (i%5==4) {
+            let startTime = moment(result.activityList[i].startTimeLocal);
+            let tempWeekName = startTime.format('Y_w');
+            if (weekName != tempWeekName) {
                 feed.push({
                     title: "Summering",
-                    summary: getSummaryForWeek(17)
+                    summary: getSummaryForWeek(startTime.week(), startTime.year(), tempWeekName, result)
                 });
+                weekName = tempWeekName;
             }
             feed.push({
                 title: "Aktivitet",
