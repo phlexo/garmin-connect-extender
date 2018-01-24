@@ -28,31 +28,66 @@
         let details = {};
         if (typeof activity.distance === 'number') {
             details.distance = {
-                name: "Sträcka [km]",
+                name: `${browser.i18n.getMessage("detailsDistance")} [km]`,
                 value: Qty(activity.distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()
             };
         }
         if (typeof activity.duration === 'number') {
             details.duration = {
-                name: "Tid",
+                name: `${browser.i18n.getMessage("detailsTime")}`,
                 value: moment.duration(activity.duration, 'seconds').format('HH:mm:ss')
             };
         }
         if (typeof activity.calories === 'number') {
             details.calories = {
-                name: "Kalorier [kcal]",
+                name: `${browser.i18n.getMessage("detailsCalories")} [kcal]`,
                 value: activity.calories.toLocaleString()
             };
         }
         if (typeof activity.averageSpeed === 'number') {
            details.averageSpeed = {
-                name: "Tempo [min/km]",
+                name: `${browser.i18n.getMessage("detailsPace")} [min/km]`,
                 value: moment.duration(Qty(activity.averageSpeed, 'm/s').inverse().to('min/km').toPrec(0.01).scalar, 'minutes').format('m:ss')
             };
         }
         if (typeof activity.elevationGain === 'number') {
             details.elevationGain = {
-                name: "Stigning [m]",
+                name: `${browser.i18n.getMessage("detailsElevationGain")} [m]`,
+                value: Qty(activity.elevationGain, 'm').toPrec(0.01).scalar.toLocaleString()
+            };
+        }
+        return details;
+    }
+
+    function getCyclingDetails(activity) {
+        let details = {};
+        if (typeof activity.distance === 'number') {
+            details.distance = {
+                name: `${browser.i18n.getMessage("detailsDistance")} [km]`,
+                value: Qty(activity.distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()
+            };
+        }
+        if (typeof activity.duration === 'number') {
+            details.duration = {
+                name: `${browser.i18n.getMessage("detailsTime")}`,
+                value: moment.duration(activity.duration, 'seconds').format("HH:mm:ss")
+            };
+        }
+        if (typeof activity.calories === 'number') {
+            details.calories = {
+                name: `${browser.i18n.getMessage("detailsCalories")} [kcal]`,
+                value: activity.calories.toLocaleString()
+            };
+        }
+        if (typeof activity.averageSpeed === 'number') {
+            details.averageSpeed = {
+                name: `${browser.i18n.getMessage("detailsSpeed")} [km/h]`,
+                value: Qty(activity.averageSpeed, 'm/s').to('km/h').toPrec(0.01).scalar.toLocaleString()
+            };
+        }
+        if (typeof activity.elevationGain === 'number') {
+            details.elevationGain = {
+                name: `${browser.i18n.getMessage("detailsElevationGain")} [m]`,
                 value: Qty(activity.elevationGain, 'm').toPrec(0.01).scalar.toLocaleString()
             };
         }
@@ -63,25 +98,25 @@
         let details = {};
         if (typeof activity.distance === 'number') {
             details.distance = {
-                name: "Sträcka [m]",
+                name: `${browser.i18n.getMessage("detailsDistance")} [m]`,
                 value: Qty(activity.distance, 'm').toPrec(1).scalar.toLocaleString()
             };
         }
         if (typeof activity.duration === 'number') {
             details.duration = {
-                name: "Tid",
+                name: `${browser.i18n.getMessage("detailsTime")}`,
                 value: moment.duration(activity.duration, 'seconds').format('HH:mm:ss')
             };
         }
         if (typeof activity.calories === 'number') {
             details.calories = {
-                name: "Kalorier",
+                name: `${browser.i18n.getMessage("detailsCalories")} [kcal]`,
                 value: activity.calories.toLocaleString()
             };
         }
         if (typeof activity.averageSpeed === 'number') {
             details.averageSpeed = {
-                name: "Hastighet [min/100m]",
+                name: `${browser.i18n.getMessage("detailsPace")} [min/100m]`,
                 value: moment.duration(Qty(activity.averageSpeed, 'm/s').inverse().toPrec(0.01).scalar*100, 'seconds').format('m:ss')
             };
         }
@@ -92,31 +127,31 @@
         let details = {};
         if (typeof activity.distance === 'number') {
             details.distance = {
-                name: "Sträcka [km]",
+                name: `${browser.i18n.getMessage("detailsDistance")} [km]`,
                 value: Qty(activity.distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()
             };
         }
         if (typeof activity.duration === 'number') {
             details.duration = {
-                name: "Tid",
+                name: `${browser.i18n.getMessage("detailsTime")}`,
                 value: moment.duration(activity.duration, 'seconds').format("HH:mm:ss")
             };
         }
         if (typeof activity.calories === 'number') {
             details.calories = {
-                name: "Kalorier",
+                name: `${browser.i18n.getMessage("detailsCalories")} [kcal]`,
                 value: activity.calories.toLocaleString()
             };
         }
         if (typeof activity.averageSpeed === 'number') {
             details.averageSpeed = {
-                name: "Hastighet [km/h]",
+                name: `${browser.i18n.getMessage("detailsSpeed")} [km/h]`,
                 value: Qty(activity.averageSpeed, 'm/s').to('km/h').toPrec(0.01).scalar.toLocaleString()
             };
         }
         if (typeof activity.elevationGain === 'number') {
             details.elevationGain = {
-                name: "Stigning [m]",
+                name: `${browser.i18n.getMessage("detailsSpeed")} [m]`,
                 value: Qty(activity.elevationGain, 'm').toPrec(0.01).scalar.toLocaleString()
             };
         }
@@ -133,6 +168,9 @@
                     break;
                 case "swimming":
                     activityDetailsCache[activity.activityId] = getSwimmingDetails(activity);
+                    break;
+                case "cycling":
+                    activityDetailsCache[activity.activityId] = getCyclingDetails(activity);
                     break;
                 default:
                     activityDetailsCache[activity.activityId] = getOtherDetails(activity);
@@ -175,15 +213,15 @@
             timePeriod: "not yet impl.",
             details: {
                 cycling: {
-                    name: "Cykling",
+                    name: browser.i18n.getMessage("activityCycling"),
                     value: "100km"
                 },
                 running: {
-                    name: "Löpning",
+                    name: browser.i18n.getMessage("activityRunning"),
                     value: "60km"
                 },
                 swimming: {
-                    name: "Simning",
+                    name: browser.i18n.getMessage("activitySwimming"),
                     value: "6km"
                 }
             }
@@ -197,15 +235,15 @@
             timePeriod: "not yet impl.",
             details: {
                 cycling: {
-                    name: "Cykling",
+                    name: browser.i18n.getMessage("activityCycling"),
                     value: "100km"
                 },
                 running: {
-                    name: "Löpning",
+                    name: browser.i18n.getMessage("activityRunning"),
                     value: "60km"
                 },
                 swimming: {
-                    name: "Simning",
+                    name: browser.i18n.getMessage("activitySwimming"),
                     value: "6km"
                 }
             }

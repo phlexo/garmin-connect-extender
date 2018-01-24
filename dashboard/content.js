@@ -2,7 +2,7 @@
     console.log("dashboard/content.js is loaded.");
 
     Handlebars.registerPartial('activity', `
-        <div class="extension-widget">
+        <div class="extension-widget" id="extension-activity-{{id}}">
             <div class="extension-widget-header">
                 <div>
                     <h2>{{title}} &lt;{{timePeriod}}&gt;</h2>
