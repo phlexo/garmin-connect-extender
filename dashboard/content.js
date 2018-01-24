@@ -166,15 +166,10 @@
             <div id="extender-placeholder"></div>
         `);
         let request = {}
-        try {
-            request.displayName = window.content.document.defaultView.wrappedJSObject.VIEWER_USERPREFERENCES.displayName;
-        }
-        catch (error) {
-            console.log(error);
-        }
+        // TODO: Must include displayName in the request, this is found in the VIEWER_USERPREFERENCES object
         console.log("Sending message to background script.");
         console.log(request);
-        browser.runtime.sendMessage(request).then((response) => {
+        browser.runtime.sendMessage(request).then(response => {
             console.log("Response received from background script.");
             console.log(response);
             $("#extender-placeholder").html(template(response));

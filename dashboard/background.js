@@ -212,7 +212,7 @@
         };
     }
 
-    function resultToFeed(result) {
+    function convertResultToFeed(result) {
         let feed = [];
         feed.push({
             title: "Summering",
@@ -233,62 +233,58 @@
         return feed;
     }
 
-    function sendResponse(func) {
-        // Årlig status
-        // https://connect.garmin.com/modern/proxy/calendar-service/year/2018
-        
-        // Januari
-        // https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0
-        
-        // Vecka
-        // https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0/day/18/start/1
-        
-        // Enskild aktivitet
-        // https://connect.garmin.com/modern/proxy/activity-service/activity/2434047486?_=1516287552093
-        
-        console.log("Sending live data.");
-        $.ajax({
-            async: false,
-            url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566",
-            success: function (result) {
+    function handleFeedRequest() {
+        return new Promise(resolve => {
+            console.log("Requesting live data.");
+            $.ajax({
+                // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018" // Årlig status
+                // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0" // Januari
+                // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0/day/18/start/1" // Vecka
+                // url: "https://connect.garmin.com/modern/proxy/activity-service/activity/2434047486?_=1516287552093" // Enskild aktivitet
+                url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566"
+            }).done(function(result) {
                 console.log("Live data received.");
                 console.log(result);
                 console.log("Converting live data to feed.");
-                let feed = resultToFeed(result);
+                let feed = convertResultToFeed(result);
                 console.log("Live result converted to feed.");
                 console.log(feed);
-                func({
+                resolve({
                     feed: feed
                 });
-            }
+            });
         });
     }
 
-    function sendMockResponse(func) {
-        console.log("Sending mock data.");
-        let mock = new Mock();
-        let result = mock.getActivityList();
-        console.log("Mock data received.");
-        console.log(result);
-        console.log("Converting mock data to feed.");
-        let feed = resultToFeed(result);
-        console.log("Mock result converted to feed.");
-        console.log(feed);
-        func({
-            feed: feed
+    function handleFeedRequestMock() {
+        return new Promise(resolve => {
+            console.log("Requesting mock data.");
+            let mock = new Mock();
+            let result = mock.getActivityList();
+            setTimeout(() => {
+                console.log("Mock data received.");
+                console.log(result);
+                console.log("Converting mock data to feed.");
+                let feed = convertResultToFeed(result);
+                console.log("Mock result converted to feed.");
+                console.log(feed);
+                resolve({
+                    feed: feed
+                });
+            }, 1000);
         });
     }
 
-    browser.runtime.onMessage.addListener((request, sender, func) => {
+    browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
         console.log(`Message received from content script.`);
         console.log(request);
         if (sender.tab.url.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi)) {
             console.log("Debug page has been loaded.");
-            sendMockResponse(func);
+            return handleFeedRequestMock();
         }
         else if (sender.tab.url.match(/https?:\/\/connect.garmin.com\/modern\/dashboard\/.*/gi)) {
             console.log("Live page has been loaded.");
-            sendResponse(func);
+            return handleFeedRequest();
         }
     });
 
