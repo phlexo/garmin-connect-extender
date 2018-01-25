@@ -379,7 +379,7 @@
             console.log("Debug page has been loaded.");
             return handleFeedRequestMock();
         }
-        else if (sender.tab.url.match(/https?:\/\/connect.garmin.com\/modern\/dashboard\/.*/gi)) {
+        else if (sender.tab.url.match(/https?:\/\/connect.garmin.com\/modern.*/gi)) {
             console.log("Live page has been loaded.");
             return handleFeedRequest();
         }

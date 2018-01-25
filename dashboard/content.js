@@ -82,7 +82,7 @@
         </div>
     `);
 
-    if (window.location.href.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi) || window.location.href.match(/https?:\/\/connect.garmin.com\/modern\/dashboard\/.*/gi)) {
+    function show() {
         $("head").append(`
             <style>
                 .extension-summary {
@@ -162,9 +162,9 @@
                 }
             </style>
         `);
-        $(".main-body").html(`
+        $(".main-body > .content")[0].outerHTML = `
             <div id="extender-placeholder"></div>
-        `);
+        `;
         let request = {}
         // TODO: Must include displayName in the request, this is found in the VIEWER_USERPREFERENCES object
         console.log("Sending message to background script.");
@@ -175,4 +175,30 @@
             $("#extender-placeholder").html(template(response));
         });
     }
+
+    $(document).on('DOMNodeInserted', ".main-nav-list", function(event) {
+        let target = $(event.target);
+        if (target.hasClass("main-nav-list")) {
+            if (target.children("ul.extender").length === 0) {
+                target.prepend(`
+                    <ul class="main-nav-group extender">
+                        <li class="main-nav-item">
+                            <a href="#" id="garmin-connect-extender-nav-item" class="main-nav-link">
+                                <i class="nav-icon icon-layers"></i>
+                                <span class="nav-text">${browser.i18n.getMessage("extensionName")}</span>
+                            </a>
+                        </li>
+                    </ul>
+                `);
+            }
+        }
+    });
+
+    $(document).on("click", "#garmin-connect-extender-nav-item", (e) => {
+        show();
+    });
+
+    // if (window.location.href.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi) || window.location.href.match(/https?:\/\/connect.garmin.com\/modern\/dashboard\/.*/gi)) {
+    //     show();
+    // }
 })(jQuery);
