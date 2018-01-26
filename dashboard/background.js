@@ -16,11 +16,8 @@
         });
     });
 
-    let activityDetailsCache = {};
-
     function getIconClass(typeKey) {
-        var tokens = typeKey.split('_');
-        switch (tokens[tokens.length-1]) {
+        switch (typeKey.split('_').pop()) {
             case "running":
                 return "icon-activity-running";
             case "cycling":
@@ -167,37 +164,7 @@
     }
 
     function getActivity(activity) {
-        if (!(activity.activityId in activityDetailsCache)) {
-            console.log(`Activity with id ${activity.activityId} not found in the cache, loading activity.`);
-            var tokens = activity.activityType.typeKey.split('_');
-            switch (tokens[tokens.length-1]) {
-                case "running":
-                    activityDetailsCache[activity.activityId] = getRunningDetails(activity);
-                    break;
-                case "swimming":
-                    activityDetailsCache[activity.activityId] = getSwimmingDetails(activity);
-                    break;
-                case "cycling":
-                    activityDetailsCache[activity.activityId] = getCyclingDetails(activity);
-                    break;
-                default:
-                    activityDetailsCache[activity.activityId] = getOtherDetails(activity);
-                    break;
-            }
-        }
-        else {
-            console.log(`Activity with id ${activity.activityId} was found in the cache.`);
-        }
-        let started = moment(activity.startTimeLocal);
-        let completed = moment(activity.startTimeLocal).add(activity.duration, 'seconds');
-        let timePeriod = `${started.format('LLLL')} - `;
-        if (started.isSame(completed, 'day')) {
-            timePeriod += completed.format('LT');
-        }
-        else {
-            timePeriod += completed.format('LLLL');
-        }
-        return {
+        let viewModel = {
             title: browser.i18n.getMessage("activity"),
             id: activity.activityId,
             name: activity.activityName,
@@ -205,23 +172,52 @@
             iconClass: getIconClass(activity.activityType.typeKey),
             activityUrl: `/modern/activity/${activity.activityId}`,
             ownerProfileImageUrlSmall: activity.ownerProfileImageUrlSmall,
-            timePeriod: timePeriod,
+            timePeriod: null,
             owner: activity.ownerFullName,
             ownerUrl: `/modern/profile/${activity.ownerDisplayName}`,
             description: activity.description,
             mapImage: browser.extension.getURL("debug/map.png"),
-            details: activityDetailsCache[activity.activityId]
+            details: null
         };
+        switch (activity.activityType.typeKey.split('_').pop()) {
+            case "running":
+                viewModel.details = getRunningDetails(activity);
+                break;
+            case "swimming":
+                viewModel.details = getSwimmingDetails(activity);
+                break;
+            case "cycling":
+                viewModel.details = getCyclingDetails(activity);
+                break;
+            default:
+                viewModel.details = getOtherDetails(activity);
+                break;
+        }
+        let started = moment(activity.startTimeLocal);
+        let completed = moment(activity.startTimeLocal).add(activity.duration, 'seconds');
+        viewModel.timePeriod = `${started.format('LLLL')} - `;
+        if (started.isSame(completed, 'day')) {
+            viewModel.timePeriod += completed.format('LT');
+        }
+        else {
+            viewModel.timePeriod += completed.format('LLLL');
+        }
+        return viewModel;
     }
 
     function getSummaryForWeek(weekNumber, year, weekName, result) {
-        let summary = {};
+        let summary = {
+            total: {
+                duration: 0,
+                distance: 0
+            }
+        };
         for (let i = 0; i < result.activityList.length; i++) {
             let tempWeekName = moment(result.activityList[i].startTimeLocal).format('Y_w');
             if (weekName === tempWeekName) {
-                let tokens = result.activityList[i].activityType.typeKey.split('_');
-                let activityType = tokens[tokens.length-1];
-                switch (activityType) {
+                summary.total.duration += result.activityList[i].duration
+                summary.total.distance += result.activityList[i].distance
+                switch (result.activityList[i].activityType.typeKey.split('_').pop()) {
                     case "running":
                         if (summary.running === undefined) {
                             summary.running = {
@@ -276,7 +272,15 @@
         let viewModel = {
             title: browser.i18n.getMessage("summary"),
             timePeriod: `${browser.i18n.getMessage("week")} ${weekNumber} ${year}`,
-            activities: {}
+            activities: {
+                total: {
+                    name: `${browser.i18n.getMessage("activityTotal")}`,
+                    details: [
+                        `${moment.duration(summary.total.duration, 'seconds').format("HH:mm:ss")}`,
+                        `${Qty(summary.total.distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
+                    ]
+                }
+            }
         };
         if (summary.swimming != undefined) {
             viewModel.activities.swimming = {
