@@ -1,11 +1,19 @@
 (function ($) {
     console.log("dashboard/background.js is loaded.");
 
+    // Locale display configuration
     browser.i18n.getAcceptLanguages().then((languages) => {
         if (languages.length > 0) {
             console.log(`Setting locale for moment.js to ${languages[0]}.`);
             moment.locale(languages[0]);
         }
+    });
+
+    // Apply the css file to the page when it loads
+    browser.tabs.onUpdated.addListener((id, changeInfo, tab) => {
+        browser.tabs.insertCSS(tab.id, {
+            file: browser.extension.getURL("dashboard/style.css")
+        });
     });
 
     let activityDetailsCache = {};
@@ -372,6 +380,7 @@
         });
     }
 
+    // Listen for data requests from the content script
     browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
         console.log(`Message received from content script.`);
         console.log(request);
@@ -384,17 +393,4 @@
             return handleFeedRequest();
         }
     });
-
-    function redirect(requestDetails) {
-        return {
-            redirectUrl: browser.extension.getURL("dashboard/page.html")
-        };
-    }
-
-    browser.webRequest.onBeforeRequest.addListener(
-        redirect,
-        { urls: ["https://connect.garmin.com/modern/extension/"], types: ["main_frame"] },
-        ["blocking"]
-    );
-
 })(jQuery);

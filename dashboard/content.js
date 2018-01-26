@@ -82,123 +82,52 @@
         </div>
     `);
 
-    function show() {
-        $("head").append(`
-            <style>
-                .extension-summary {
-                    background: linear-gradient(141deg, #0fb8ad 0%, #1fc8db 20%, #2cb5e8 34%);
-                }
-                .extension-widget {
-                    margin: 0 9px 20px 9px;
-                    padding: 11px 15px;
-                    border: 1px solid #e5e5e5;
-                    border-radius: 3px;
-                    overflow: hidden;
-                    font-family: 'Open Sans','HelveticaNeue-Light','Helvetica Neue Light','Helvetica Neue',Helvetica,Arial,sans-serif;
-                }
-                .extension-widget-header {
-                    display: flex;
-                }
-                .extension-widget-header div:first-child {
-                    flex-grow: 1;
-                }
-                .extender-widget-profile-image {
-                    margin: 0px 0px 5px 0px;
-                    border: 1px solid #e5e5e5;
-                    border-radius: 10px;
-                    overflow: hidden;
-                }
-                .extension-widget-identifier {
-                    height: 26px;
-                    width: 26px;
-                    margin-top: 4px;
-                    line-height: 26px;
-                    font-size: 16px;
-                    box-shadow: 0 0 0 1px #ccc;
-                    text-align: center;
-                    border-radius: 50%;
-                    color: #888;
-                    background: #fafafa;
-                    margin-right: 11px;
-                    float: left;
-                }
-                .extension-widget h2 {
-                    margin: 0;
-                    font-size: 12px;
-                    letter-spacing: 2px;
-                    text-transform: uppercase;
-                    white-space: nowrap;
-                }
-                .extension-widget h4 {
-                    margin: 5px 0;
-                    font-size: 22px;
-                    letter-spacing: 2px;
-                    white-space: nowrap;
-                }
-                .extension-widget-body {
-                    display: flex;
-                }
-                .extension-widget-body div:first-child {
-                    flex-grow: 1;
-                }
-                .extension-widget-description {
-                    color: #888;
-                    font-size: 12px;
-                }
-                .extension-widget-details {
-                    display: grid;
-                    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-                    grid-gap: 10px;
-                    margin: 5px 0 0 0;
-                }
-                .extension-widget-details-value {
-                    font-weight: 400;
-                    font-size: 18px;
-                }
-                .extension-widget-details-label {
-                    color: #888;
-                    font-size: 12px;
-                    vertical-align: middle;
-                }
-            </style>
-        `);
-        $(".main-body > .content")[0].outerHTML = `
-            <div id="extender-placeholder"></div>
-        `;
-        let request = {}
-        // TODO: Must include displayName in the request, this is found in the VIEWER_USERPREFERENCES object
-        console.log("Sending message to background script.");
-        console.log(request);
-        browser.runtime.sendMessage(request).then(response => {
-            console.log("Response received from background script.");
-            console.log(response);
-            $("#extender-placeholder").html(template(response));
-        });
+    function toggleOverlay() {
+        $("#extender-overlay").toggle();
+        if ($("#extender-placeholder").length) {
+            let request = {}
+            // TODO: Must include displayName in the request, this is found in the VIEWER_USERPREFERENCES object
+            console.log("Sending message to background script.");
+            console.log(request);
+            browser.runtime.sendMessage(request).then(response => {
+                console.log("Response received from background script.");
+                console.log(response);
+                $("#extender-placeholder").html(template(response));
+            });
+        }
     }
 
+    // The menu is loaded dynamically, so we can't just add the menu item immeditately, we need to wait for the menu to load
     $(document).on('DOMNodeInserted', ".main-nav-list", function(event) {
         let target = $(event.target);
-        if (target.hasClass("main-nav-list")) {
-            if (target.children("ul.extender").length === 0) {
-                target.prepend(`
-                    <ul class="main-nav-group extender">
-                        <li class="main-nav-item">
-                            <a href="#" id="garmin-connect-extender-nav-item" class="main-nav-link">
-                                <i class="nav-icon icon-layers"></i>
-                                <span class="nav-text">${browser.i18n.getMessage("extensionName")}</span>
-                            </a>
-                        </li>
-                    </ul>
-                `);
-            }
+        if (target.hasClass("main-nav-list") && target.children("ul.extender").length === 0) {
+            target.prepend(`
+                <ul class="main-nav-group extender">
+                    <li class="main-nav-item">
+                        <a href="#" id="extender-nav-link" class="main-nav-link">
+                            <i class="nav-icon icon-layers"></i>
+                            <span class="nav-text">${browser.i18n.getMessage("extensionName")}</span>
+                        </a>
+                    </li>
+                </ul>
+            `);
         }
     });
 
-    $(document).on("click", "#garmin-connect-extender-nav-item", (e) => {
-        show();
+    // Append the place holder for the extender immediately, but hidden
+    $(".connect-container").append(`
+        <div id="extender-overlay" style="display: none;">
+            <div id="extender-placeholder"></div>
+        </div>
+    `);
+
+    // When clicking on the menu item for the extender
+    $(document).on("click", "#extender-nav-link", (e) => {
+        toggleOverlay();
     });
 
-    // if (window.location.href.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi) || window.location.href.match(/https?:\/\/connect.garmin.com\/modern\/dashboard\/.*/gi)) {
-    //     show();
-    // }
+    // When loading the debug page, show the extender immediately
+    if (window.location.href.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi)) {
+        toggleOverlay();
+    }
 })(jQuery);
