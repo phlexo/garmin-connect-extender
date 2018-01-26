@@ -1,33 +1,15 @@
 (function ($) {
-    console.log("dashboard/background.js is loaded.");
-
-    // Locale display configuration
     browser.i18n.getAcceptLanguages().then((languages) => {
         if (languages.length > 0) {
-            console.log(`Setting locale for moment.js to ${languages[0]}.`);
             moment.locale(languages[0]);
         }
     });
 
-    // Apply the css file to the page when it loads
     browser.tabs.onUpdated.addListener((id, changeInfo, tab) => {
         browser.tabs.insertCSS(tab.id, {
             file: browser.extension.getURL("dashboard/style.css")
         });
     });
-
-    function getIconClass(typeKey) {
-        switch (typeKey.split('_').pop()) {
-            case "running":
-                return "icon-activity-running";
-            case "cycling":
-                return "icon-activity-cycling";
-            case "swimming":
-                return "icon-activity-swimming";
-            default:
-                return "icon-activity-other";
-        }
-    }
 
     function getRunningDetails(activity) {
         let details = {};
@@ -169,7 +151,7 @@
             id: activity.activityId,
             name: activity.activityName,
             type: activity.activityType.typeKey,
-            iconClass: getIconClass(activity.activityType.typeKey),
+            iconClass: null,
             activityUrl: `/modern/activity/${activity.activityId}`,
             ownerProfileImageUrlSmall: activity.ownerProfileImageUrlSmall,
             timePeriod: null,
@@ -182,15 +164,19 @@
         switch (activity.activityType.typeKey.split('_').pop()) {
             case "running":
                 viewModel.details = getRunningDetails(activity);
+                viewModel.iconClass = "icon-activity-running";
                 break;
             case "swimming":
                 viewModel.details = getSwimmingDetails(activity);
+                viewModel.iconClass = "icon-activity-swimming";
                 break;
             case "cycling":
                 viewModel.details = getCyclingDetails(activity);
+                viewModel.iconClass = "icon-activity-cycling";
                 break;
             default:
                 viewModel.details = getOtherDetails(activity);
+                viewModel.iconClass = "icon-activity-other";
                 break;
         }
         let started = moment(activity.startTimeLocal);
@@ -342,59 +328,34 @@
         return feed;
     }
 
-    function handleFeedRequest() {
-        return new Promise(resolve => {
-            console.log("Requesting live data.");
-            $.ajax({
-                // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018" // Årlig status
-                // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0" // Januari
-                // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0/day/18/start/1" // Vecka
-                // url: "https://connect.garmin.com/modern/proxy/activity-service/activity/2434047486?_=1516287552093" // Enskild aktivitet
-                url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566"
-            }).done(function(result) {
-                console.log("Live data received.");
-                console.log(result);
-                console.log("Converting live data to feed.");
-                let feed = convertResultToFeed(result);
-                console.log("Live result converted to feed.");
-                console.log(feed);
-                resolve({
-                    feed: feed
-                });
-            });
-        });
-    }
-
-    function handleFeedRequestMock() {
-        return new Promise(resolve => {
-            console.log("Requesting mock data.");
-            let mock = new Mock();
-            let result = mock.getActivityList();
-            setTimeout(() => {
-                console.log("Mock data received.");
-                console.log(result);
-                console.log("Converting mock data to feed.");
-                let feed = convertResultToFeed(result);
-                console.log("Mock result converted to feed.");
-                console.log(feed);
-                resolve({
-                    feed: feed
-                });
-            }, 1000);
-        });
-    }
-
-    // Listen for data requests from the content script
     browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        console.log(`Message received from content script.`);
-        console.log(request);
-        if (sender.tab.url.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi)) {
-            console.log("Debug page has been loaded.");
-            return handleFeedRequestMock();
-        }
-        else if (sender.tab.url.match(/https?:\/\/connect.garmin.com\/modern.*/gi)) {
-            console.log("Live page has been loaded.");
-            return handleFeedRequest();
+        switch (request.type) {
+            case "feed":
+                return new Promise(resolve => {
+                    $.ajax({
+                        // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018" // Årlig status
+                        // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0" // Januari
+                        // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0/day/18/start/1" // Vecka
+                        // url: "https://connect.garmin.com/modern/proxy/activity-service/activity/2434047486?_=1516287552093" // Enskild aktivitet
+                        url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566"
+                    }).done(function(result) {
+                        let feed = convertResultToFeed(result);
+                        resolve({
+                            feed: feed
+                        });
+                    });
+                });
+            case "feedMock":
+                return new Promise(resolve => {
+                    let mock = new Mock();
+                    let result = mock.getActivityList();
+                    setTimeout(() => {
+                        let feed = convertResultToFeed(result);
+                        resolve({
+                            feed: feed
+                        });
+                    }, 1000);
+                });
         }
     });
 })(jQuery);

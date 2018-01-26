@@ -1,5 +1,8 @@
 (function ($) {
-    console.log("dashboard/content.js is loaded.");
+    let debug = false;
+    if (window.location.href.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi)) {
+        debug = true;
+    }
 
     Handlebars.registerPartial('activity', `
         <div class="extension-widget" id="extension-activity-{{id}}">
@@ -85,13 +88,10 @@
     function toggleOverlay() {
         $("#extender-overlay").toggle();
         if ($("#extender-placeholder").length) {
-            let request = {}
-            // TODO: Must include displayName in the request, this is found in the VIEWER_USERPREFERENCES object
-            console.log("Sending message to background script.");
-            console.log(request);
-            browser.runtime.sendMessage(request).then(response => {
-                console.log("Response received from background script.");
-                console.log(response);
+            browser.runtime.sendMessage({
+                type: debug ? "feedMock" : "feed",
+                displayName: null
+            }).then(response => {
                 $("#extender-placeholder").html(template(response));
             });
         }
@@ -127,7 +127,7 @@
     });
 
     // When loading the debug page, show the extender immediately
-    if (window.location.href.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi)) {
+    if (debug) {
         toggleOverlay();
     }
 })(jQuery);
