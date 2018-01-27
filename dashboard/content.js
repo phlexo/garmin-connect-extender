@@ -94,21 +94,19 @@
     `);
 
     function toggleOverlay() {
-        $("#extender-overlay").toggle();
-        if ($("#extender-placeholder").length) {
-            browser.runtime.sendMessage({
-                type: debug ? "feedMock" : "feed",
-                displayName: null
-            }).then(response => {
-                console.log(response.viewModel);
-                try {
-                    $("#extender-placeholder").html(template(response.viewModel));
-                }
-                catch (error) {
-                    console.log(error);
-                }
-            });
-        }
+        $("#gce-overlay").toggle();
+        browser.runtime.sendMessage({
+            type: debug ? "feedMock" : "feed",
+            displayName: null
+        }).then(response => {
+            console.log(response.viewModel);
+            try {
+                $(`#${response.viewModel.id}`).html(template(response.viewModel));
+            }
+            catch (error) {
+                console.log(error);
+            }
+        });
     }
 
     // The menu is loaded dynamically, so we can't just add the menu item immeditately, we need to wait for the menu to load
@@ -130,8 +128,8 @@
 
     // Append the place holder for the extender immediately, but hidden
     $(".connect-container").append(`
-        <div id="extender-overlay" style="display: none;">
-            <div id="extender-placeholder"></div>
+        <div id="gce-overlay" style="display: none;">
+            <div id="gce-container"></div>
         </div>
     `);
 

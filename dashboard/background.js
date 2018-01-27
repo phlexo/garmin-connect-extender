@@ -190,63 +190,63 @@
     }
 
     function getWeek(weekNumber, year, weekName, result) {
-        let summary = new Map();
-        summary.set('total', {
+        let summaries = new Map();
+        summaries.set('total', {
             duration: 0,
             distance: 0
         });
         for (let i = 0; i < result.activityList.length; i++) {
             let tempWeekName = moment(result.activityList[i].startTimeLocal).format('Y_w');
             if (weekName === tempWeekName) {
-                summary.get('total').duration += result.activityList[i].duration
-                summary.get('total').distance += result.activityList[i].distance
+                summaries.get('total').duration += result.activityList[i].duration
+                summaries.get('total').distance += result.activityList[i].distance
                 switch (result.activityList[i].activityType.typeKey.split('_').pop()) {
                     case "running":
-                        if (!summary.has('running')) {
-                            summary.set('running', {
+                        if (!summaries.has('running')) {
+                            summaries.set('running', {
                                 duration: result.activityList[i].duration,
                                 distance: result.activityList[i].distance
                             });
                         }
                         else {
-                            summary.get('running').duration += result.activityList[i].duration;
-                            summary.get('running').distance += result.activityList[i].distance;
+                            summaries.get('running').duration += result.activityList[i].duration;
+                            summaries.get('running').distance += result.activityList[i].distance;
                         }
                         break;
                     case "cycling":
-                        if (!summary.has('cycling')) {
-                            summary.set('cycling', {
+                        if (!summaries.has('cycling')) {
+                            summaries.set('cycling', {
                                 duration: result.activityList[i].duration,
                                 distance: result.activityList[i].distance
                             });
                         }
                         else {
-                            summary.get('cycling').duration += result.activityList[i].duration;
-                            summary.get('cycling').distance += result.activityList[i].distance;
+                            summaries.get('cycling').duration += result.activityList[i].duration;
+                            summaries.get('cycling').distance += result.activityList[i].distance;
                         }
                         break;
                     case "swimming":
-                        if (!summary.has('swimming')) {
-                            summary.set('swimming', {
+                        if (!summaries.has('swimming')) {
+                            summaries.set('swimming', {
                                 duration: result.activityList[i].duration,
                                 distance: result.activityList[i].distance
                             });
                         }
                         else {
-                            summary.get('swimming').duration += result.activityList[i].duration;
-                            summary.get('swimming').distance += result.activityList[i].distance;
+                            summaries.get('swimming').duration += result.activityList[i].duration;
+                            summaries.get('swimming').distance += result.activityList[i].distance;
                         }
                         break;
                     default:
-                        if (!summary.has('other')) {
-                            summary.set('other', {
+                        if (!summaries.has('other')) {
+                            summaries.set('other', {
                                 duration: result.activityList[i].duration,
                                 distance: result.activityList[i].distance
                             });
                         }
                         else {
-                            summary.get('other').duration += result.activityList[i].duration;
-                            summary.get('other').distance += result.activityList[i].distance;
+                            summaries.get('other').duration += result.activityList[i].duration;
+                            summaries.get('other').distance += result.activityList[i].distance;
                         }
                         break;
                 }
@@ -259,43 +259,43 @@
         viewModel.summaries.set('total', {
             name: `${browser.i18n.getMessage("activityTotal")}`,
             details: [
-                `${moment.duration(summary.get('total').duration, 'seconds').format("HH:mm:ss")}`,
-                `${Qty(summary.get('total').distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
+                `${moment.duration(summaries.get('total').duration, 'seconds').format("HH:mm:ss")}`,
+                `${Qty(summaries.get('total').distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
             ]
         });
-        if (summary.has('swimming')) {
+        if (summaries.has('swimming')) {
             viewModel.summaries.set('swimming', {
                 name: `${browser.i18n.getMessage("activitySwimming")}`,
                 details: [
-                    `${moment.duration(summary.get('swimming').duration, 'seconds').format("HH:mm:ss")}`,
-                    `${Qty(summary.get('swimming').distance, 'm').toPrec(1).scalar.toLocaleString()} m`
+                    `${moment.duration(summaries.get('swimming').duration, 'seconds').format("HH:mm:ss")}`,
+                    `${Qty(summaries.get('swimming').distance, 'm').toPrec(1).scalar.toLocaleString()} m`
                 ]
             });
         }
-        if (summary.has('running')) {
+        if (summaries.has('running')) {
             viewModel.summaries.set('running', {
                 name: `${browser.i18n.getMessage("activityRunning")}`,
                 details: [
-                    `${moment.duration(summary.get('running').duration, 'seconds').format("HH:mm:ss")}`,
-                    `${Qty(summary.get('running').distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
+                    `${moment.duration(summaries.get('running').duration, 'seconds').format("HH:mm:ss")}`,
+                    `${Qty(summaries.get('running').distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
                 ]
             });
         }
-        if (summary.has('cycling')) {
+        if (summaries.has('cycling')) {
             viewModel.summaries.set('cycling', {
                 name: `${browser.i18n.getMessage("activityCycling")}`,
                 details: [
-                    `${moment.duration(summary.get('cycling').duration, 'seconds').format("HH:mm:ss")}`,
-                    `${Qty(summary.get('cycling').distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
+                    `${moment.duration(summaries.get('cycling').duration, 'seconds').format("HH:mm:ss")}`,
+                    `${Qty(summaries.get('cycling').distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
                 ]
             });
         }
-        if (summary.has('other')) {
+        if (summaries.has('other')) {
             viewModel.summaries.set('other', {
                 name: `${browser.i18n.getMessage("activityOther")}`,
                 details: [
-                    `${moment.duration(summary.get('other').duration, 'seconds').format("HH:mm:ss")}`,
-                    `${Qty(summary.get('other').distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
+                    `${moment.duration(summaries.get('other').duration, 'seconds').format("HH:mm:ss")}`,
+                    `${Qty(summaries.get('other').distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
                 ]
             });
         }
