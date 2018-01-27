@@ -12,14 +12,14 @@
     margin-left: 60px;
     background-color: white;
 }
-.main-nav-hover #extender-overlay {
+.main-nav-hover #gce-overlay {
     width: calc(100% - 273px);
     margin-left: 273px;
 }
-.extension-summary {
+.gce-summary {
     background: linear-gradient(141deg, #0fb8ad 0%, #1fc8db 20%, #2cb5e8 34%);
 }
-.extension-widget {
+.gce-widget {
     margin: 0 9px 20px 9px;
     padding: 11px 15px;
     border: 1px solid #e5e5e5;
@@ -27,19 +27,19 @@
     overflow: hidden;
     font-family: 'Open Sans','HelveticaNeue-Light','Helvetica Neue Light','Helvetica Neue',Helvetica,Arial,sans-serif;
 }
-.extension-widget-header {
+.gce-widget-header {
     display: flex;
 }
-.extension-widget-header div:first-child {
+.gce-widget-header div:first-child {
     flex-grow: 1;
 }
-.extender-widget-profile-image {
+.gce-widget-profile-image {
     margin: 0px 0px 5px 0px;
     border: 1px solid #e5e5e5;
     border-radius: 10px;
     overflow: hidden;
 }
-.extension-widget-identifier {
+.gce-widget-identifier {
     height: 26px;
     width: 26px;
     margin-top: 4px;
@@ -53,40 +53,40 @@
     margin-right: 11px;
     float: left;
 }
-.extension-widget h2 {
+.gce-widget h2 {
     margin: 0;
     font-size: 12px;
     letter-spacing: 2px;
     text-transform: uppercase;
     white-space: nowrap;
 }
-.extension-widget h4 {
+.gce-widget h4 {
     margin: 5px 0;
     font-size: 22px;
     letter-spacing: 2px;
     white-space: nowrap;
 }
-.extension-widget-body {
+.gce-widget-body {
     display: flex;
 }
-.extension-widget-body div:first-child {
+.gce-widget-body div:first-child {
     flex-grow: 1;
 }
-.extension-widget-description {
+.gce-widget-description {
     color: #888;
     font-size: 12px;
 }
-.extension-widget-details {
+.gce-widget-details {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
     grid-gap: 10px;
     margin: 5px 0 0 0;
 }
-.extension-widget-details-value {
+.gce-widget-details-value {
     font-weight: 400;
     font-size: 18px;
 }
-.extension-widget-details-label {
+.gce-widget-details-label {
     color: #888;
     font-size: 12px;
     vertical-align: middle;

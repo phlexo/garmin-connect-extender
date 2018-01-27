@@ -13,22 +13,22 @@
     });
 
     Handlebars.registerPartial('activity', `
-        <div class="extension-widget" id="extension-activity-{{id}}">
-            <div class="extension-widget-header">
+        <div class="gce-widget" id="{{id}}">
+            <div class="gce-widget-header">
                 <div>
                     <h2>{{title}} &lt;{{timePeriod}}&gt;</h2>
                     <div>
-                        <i class="{{iconClass}} extension-widget-identifier"></i>
+                        <i class="{{iconClass}} gce-widget-identifier"></i>
                         <h4><a href="{{activityUrl}}">{{name}}</a></h4>
                     </div>
                 </div>
-                <div class="extender-widget-profile-image">
+                <div class="gce-widget-profile-image">
                     <a href="{{ownerUrl}}"><img src="{{ownerProfileImageUrlSmall}}" /></a>
                 </div>
             </div>
-            <div class="extension-widget-body">
+            <div class="gce-widget-body">
                 <div>
-                    <div class="extension-widget-description">
+                    <div class="gce-widget-description">
                         {{#if description}}
                             <a src="#">Edit description</a>
                             <span>{{description}}</span>
@@ -36,12 +36,12 @@
                             <a src="#">Add description</a>
                         {{/if}}
                     </div>
-                    <div class="extension-widget-details">
+                    <div class="gce-widget-details">
                         {{#eachInMap details}}
                             {{#if value.value}}
                                 <div>
-                                    <div class="extension-widget-details-value">{{value.value}}</div>
-                                    <span title="{{value.name}}" class="extension-widget-details-label">{{value.name}}</span>
+                                    <div class="gce-widget-details-value">{{value.value}}</div>
+                                    <span title="{{value.name}}" class="gce-widget-details-label">{{value.name}}</span>
                                 </div>
                             {{/if}}
                         {{/eachInMap}}
@@ -55,24 +55,24 @@
     `);
 
     Handlebars.registerPartial('week', `
-        <div class="extension-widget extension-summary">
-            <div class="extension-widget-header">
+        <div class="gce-widget gce-summary" id="{{id}}">
+            <div class="gce-widget-header">
                 <div>
                     <h2>{{title}} &lt;{{timePeriod}}&gt;</h2>
                 </div>
             </div>
-            <div class="extension-widget-body">
-                <div class="extension-widget-details">
+            <div class="gce-widget-body">
+                <div class="gce-widget-details">
                     {{#eachInMap summaries}}
                         <div>
-                            <div class="extension-widget-details-value">
+                            <div class="gce-widget-details-value">
                                 {{#each value.details}}
                                     <div>
                                         {{this}}
                                     </div>
                                 {{/each}}
                             </div>
-                            <span title="{{value.name}}" class="extension-widget-details-label">{{value.name}}</span>
+                            <span title="{{value.name}}" class="gce-widget-details-label">{{value.name}}</span>
                         </div>
                     {{/eachInMap}}
                 </div>
@@ -104,11 +104,11 @@
     // The menu is loaded dynamically, so we can't just add the menu item immeditately, we need to wait for the menu to load
     $(document).on('DOMNodeInserted', ".main-nav-list", function (event) {
         let target = $(event.target);
-        if (target.hasClass("main-nav-list") && target.children("ul.extender").length === 0) {
+        if (target.hasClass("main-nav-list") && target.children("ul.gce").length === 0) {
             target.prepend(`
-                <ul class="main-nav-group extender">
+                <ul class="main-nav-group gce">
                     <li class="main-nav-item">
-                        <a href="#" id="extender-nav-link" class="main-nav-link">
+                        <a href="#" id="gce-nav-link" class="main-nav-link">
                             <i class="nav-icon icon-layers"></i>
                             <span class="nav-text">${browser.i18n.getMessage("extensionName")}</span>
                         </a>
@@ -132,7 +132,7 @@
     });
 
     // When clicking on the menu item for the extender
-    $(document).on("click", "#extender-nav-link", (e) => {
+    $(document).on("click", "#gce-nav-link", (e) => {
         toggleOverlay();
     });
 
