@@ -147,8 +147,6 @@
 
     function getActivity(activity) {
         let viewModel = {
-            title: browser.i18n.getMessage("activity"),
-            id: activity.activityId,
             name: activity.activityName,
             type: activity.activityType.typeKey,
             iconClass: null,
@@ -191,7 +189,7 @@
         return viewModel;
     }
 
-    function getSummaryForWeek(weekNumber, year, weekName, result) {
+    function getWeek(weekNumber, year, weekName, result) {
         let summary = {
             total: {
                 duration: 0,
@@ -256,9 +254,8 @@
             }
         }
         let viewModel = {
-            title: browser.i18n.getMessage("summary"),
             timePeriod: `${browser.i18n.getMessage("week")} ${weekNumber} ${year}`,
-            activities: {
+            summaries: {
                 total: {
                     name: `${browser.i18n.getMessage("activityTotal")}`,
                     details: [
@@ -269,7 +266,7 @@
             }
         };
         if (summary.swimming != undefined) {
-            viewModel.activities.swimming = {
+            viewModel.summaries.swimming = {
                 name: `${browser.i18n.getMessage("activitySwimming")}`,
                 details: [
                     `${moment.duration(summary.swimming.duration, 'seconds').format("HH:mm:ss")}`,
@@ -278,7 +275,7 @@
             };
         }
         if (summary.running != undefined) {
-            viewModel.activities.running = {
+            viewModel.summaries.running = {
                 name: `${browser.i18n.getMessage("activityRunning")}`,
                 details: [
                     `${moment.duration(summary.running.duration, 'seconds').format("HH:mm:ss")}`,
@@ -287,7 +284,7 @@
             };
         }
         if (summary.cycling != undefined) {
-            viewModel.activities.cycling = {
+            viewModel.summaries.cycling = {
                 name: `${browser.i18n.getMessage("activityCycling")}`,
                 details: [
                     `${moment.duration(summary.cycling.duration, 'seconds').format("HH:mm:ss")}`,
@@ -296,7 +293,7 @@
             };
         }
         if (summary.other != undefined) {
-            viewModel.activities.other = {
+            viewModel.summaries.other = {
                 name: `${browser.i18n.getMessage("activityOther")}`,
                 details: [
                     `${moment.duration(summary.other.duration, 'seconds').format("HH:mm:ss")}`,
@@ -307,25 +304,34 @@
         return viewModel;
     }
 
-    function convertResultToFeed(result) {
-        let feed = [];
-        let weekName = null;
+    function getViewModel(result) {
+        let viewModel = {
+            id: `gce-container`,
+            years: new Map()
+        };
         for (let i = 0; i < result.activityList.length; i++) {
             let startTime = moment(result.activityList[i].startTimeLocal);
-            let tempWeekName = startTime.format('Y_w');
-            if (weekName != tempWeekName) {
-                feed.push({
-                    title: "Summering",
-                    summary: getSummaryForWeek(startTime.week(), startTime.year(), tempWeekName, result)
-                });
-                weekName = tempWeekName;
+            let year = startTime.year();
+            if (!viewModel.years.has(year)) {
+                viewModel.years.set(year, Object.assign({
+                    id: `gce-${year}`,
+                    weeks: new Map()
+                }));
             }
-            feed.push({
-                title: "Aktivitet",
-                activity: getActivity(result.activityList[i])
-            });
+            let week = startTime.week();
+            if (!viewModel.years.get(year).weeks.has(week)) {
+                viewModel.years.get(year).weeks.set(week, Object.assign({
+                    id: `gce-${year}-${week}`,
+                    title: browser.i18n.getMessage("summary"),
+                    activities: new Map()
+                }, getWeek(week, year, `${year}_${week}`, result)));
+            }
+            viewModel.years.get(year).weeks.get(week).activities.set(result.activityList[i].activityId, Object.assign({
+                id: `gce-${result.activityList[i].activityId}`,
+                title: browser.i18n.getMessage("activity")
+            }, getActivity(result.activityList[i])));
         }
-        return feed;
+        return viewModel;
     }
 
     browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -339,9 +345,8 @@
                         // url: "https://connect.garmin.com/modern/proxy/activity-service/activity/2434047486?_=1516287552093" // Enskild aktivitet
                         url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566"
                     }).done(function(result) {
-                        let feed = convertResultToFeed(result);
                         resolve({
-                            feed: feed
+                            viewModel: getViewModel(result)
                         });
                     });
                 });
@@ -350,9 +355,8 @@
                     let mock = new Mock();
                     let result = mock.getActivityList();
                     setTimeout(() => {
-                        let feed = convertResultToFeed(result);
                         resolve({
-                            feed: feed
+                            viewModel: getViewModel(result)
                         });
                     }, 1000);
                 });

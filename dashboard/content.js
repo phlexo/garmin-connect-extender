@@ -46,7 +46,7 @@
         </div>
     `);
 
-    Handlebars.registerPartial('summary', `
+    Handlebars.registerPartial('week', `
         <div class="extension-widget extension-summary">
             <div class="extension-widget-header">
                 <div>
@@ -55,7 +55,7 @@
             </div>
             <div class="extension-widget-body">
                 <div class="extension-widget-details">
-                    {{#each activities}}
+                    {{#each summaries}}
                         <div>
                             <div class="extension-widget-details-value">
                                 {{#each details}}
@@ -72,16 +72,24 @@
         </div>
     `);
 
+    Handlebars.registerHelper('eachInMap', (map, block) => {
+        let output = '';
+        for (const [key, value] of map) {
+            output += block.fn({key, value});
+        }
+        return output;
+    });
+
     let template = Handlebars.compile(`
         <div>
-            {{#each feed}}
-                {{#with summary}}
-                    {{>summary}}
-                {{/with}}
-                {{#with activity}}
-                    {{>activity}}
-                {{/with}}
-            {{/each}}
+            {{#eachInMap years}}
+                {{#eachInMap value.weeks}}
+                    {{>week value}}
+                    {{#eachInMap value.activities}}
+                        {{>activity value}}
+                    {{/eachInMap}}
+                {{/eachInMap}}
+            {{/eachInMap}}
         </div>
     `);
 
@@ -92,13 +100,19 @@
                 type: debug ? "feedMock" : "feed",
                 displayName: null
             }).then(response => {
-                $("#extender-placeholder").html(template(response));
+                console.log(response.viewModel);
+                try {
+                    $("#extender-placeholder").html(template(response.viewModel));
+                }
+                catch (error) {
+                    console.log(error);
+                }
             });
         }
     }
 
     // The menu is loaded dynamically, so we can't just add the menu item immeditately, we need to wait for the menu to load
-    $(document).on('DOMNodeInserted', ".main-nav-list", function(event) {
+    $(document).on('DOMNodeInserted', ".main-nav-list", function (event) {
         let target = $(event.target);
         if (target.hasClass("main-nav-list") && target.children("ul.extender").length === 0) {
             target.prepend(`
