@@ -12,135 +12,135 @@
     });
 
     function getRunningDetails(activity) {
-        let details = {};
+        let details = new Map();
         if (typeof activity.distance === 'number') {
-            details.distance = {
+            details.set('distance', {
                 name: `${browser.i18n.getMessage("detailsDistance")} [km]`,
                 value: Qty(activity.distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()
-            };
+            });
         }
         if (typeof activity.duration === 'number') {
-            details.duration = {
+            details.set('duration', {
                 name: `${browser.i18n.getMessage("detailsTime")}`,
                 value: moment.duration(activity.duration, 'seconds').format('HH:mm:ss')
-            };
+            });
         }
         if (typeof activity.calories === 'number') {
-            details.calories = {
+            details.set('calories', {
                 name: `${browser.i18n.getMessage("detailsCalories")} [kcal]`,
                 value: activity.calories.toLocaleString()
-            };
+            });
         }
         if (typeof activity.averageSpeed === 'number') {
-           details.averageSpeed = {
+           details.set('averageSpeed', {
                 name: `${browser.i18n.getMessage("detailsPace")} [min/km]`,
                 value: moment.duration(Qty(activity.averageSpeed, 'm/s').inverse().to('min/km').toPrec(0.01).scalar, 'minutes').format('m:ss')
-            };
+            });
         }
         if (typeof activity.elevationGain === 'number') {
-            details.elevationGain = {
+            details.set('elevationGain', {
                 name: `${browser.i18n.getMessage("detailsElevationGain")} [m]`,
                 value: Qty(activity.elevationGain, 'm').toPrec(0.01).scalar.toLocaleString()
-            };
+            });
         }
         return details;
     }
 
     function getCyclingDetails(activity) {
-        let details = {};
+        let details = new Map();
         if (typeof activity.distance === 'number') {
-            details.distance = {
+            details.set('distance', {
                 name: `${browser.i18n.getMessage("detailsDistance")} [km]`,
                 value: Qty(activity.distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()
-            };
+            });
         }
         if (typeof activity.duration === 'number') {
-            details.duration = {
+            details.set('duration', {
                 name: `${browser.i18n.getMessage("detailsTime")}`,
                 value: moment.duration(activity.duration, 'seconds').format("HH:mm:ss")
-            };
+            });
         }
         if (typeof activity.calories === 'number') {
-            details.calories = {
+            details.set('calories', {
                 name: `${browser.i18n.getMessage("detailsCalories")} [kcal]`,
                 value: activity.calories.toLocaleString()
-            };
+            });
         }
         if (typeof activity.averageSpeed === 'number') {
-            details.averageSpeed = {
+            details.set('averageSpeed', {
                 name: `${browser.i18n.getMessage("detailsSpeed")} [km/h]`,
                 value: Qty(activity.averageSpeed, 'm/s').to('km/h').toPrec(0.01).scalar.toLocaleString()
-            };
+            });
         }
         if (typeof activity.elevationGain === 'number') {
-            details.elevationGain = {
+            details.set('elevationGain', {
                 name: `${browser.i18n.getMessage("detailsElevationGain")} [m]`,
                 value: Qty(activity.elevationGain, 'm').toPrec(0.01).scalar.toLocaleString()
-            };
+            });
         }
         return details;
     }
 
     function getSwimmingDetails(activity) {
-        let details = {};
+        let details = new Map();
         if (typeof activity.distance === 'number') {
-            details.distance = {
+            details.set('distance', {
                 name: `${browser.i18n.getMessage("detailsDistance")} [m]`,
                 value: Qty(activity.distance, 'm').toPrec(1).scalar.toLocaleString()
-            };
+            });
         }
         if (typeof activity.duration === 'number') {
-            details.duration = {
+            details.set('duration', {
                 name: `${browser.i18n.getMessage("detailsTime")}`,
                 value: moment.duration(activity.duration, 'seconds').format('HH:mm:ss')
-            };
+            });
         }
         if (typeof activity.calories === 'number') {
-            details.calories = {
+            details.set('calories', {
                 name: `${browser.i18n.getMessage("detailsCalories")} [kcal]`,
                 value: activity.calories.toLocaleString()
-            };
+            });
         }
         if (typeof activity.averageSpeed === 'number') {
-            details.averageSpeed = {
+            details.set('averageSpeed', {
                 name: `${browser.i18n.getMessage("detailsPace")} [min/100m]`,
                 value: moment.duration(Qty(activity.averageSpeed, 'm/s').inverse().toPrec(0.01).scalar*100, 'seconds').format('m:ss')
-            };
+            });
         }
         return details;
     }
 
     function getOtherDetails(activity) {
-        let details = {};
+        let details = new Map();
         if (typeof activity.distance === 'number') {
-            details.distance = {
+            details.set('distance', {
                 name: `${browser.i18n.getMessage("detailsDistance")} [km]`,
                 value: Qty(activity.distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()
-            };
+            });
         }
         if (typeof activity.duration === 'number') {
-            details.duration = {
+            details.set('duration', {
                 name: `${browser.i18n.getMessage("detailsTime")}`,
                 value: moment.duration(activity.duration, 'seconds').format("HH:mm:ss")
-            };
+            });
         }
         if (typeof activity.calories === 'number') {
-            details.calories = {
+            details.set('calories', {
                 name: `${browser.i18n.getMessage("detailsCalories")} [kcal]`,
                 value: activity.calories.toLocaleString()
-            };
+            });
         }
         if (typeof activity.averageSpeed === 'number') {
-            details.averageSpeed = {
+            details.set('averageSpeed', {
                 name: `${browser.i18n.getMessage("detailsSpeed")} [km/h]`,
                 value: Qty(activity.averageSpeed, 'm/s').to('km/h').toPrec(0.01).scalar.toLocaleString()
-            };
+            });
         }
         if (typeof activity.elevationGain === 'number') {
-            details.elevationGain = {
+            details.set('elevationGain', {
                 name: `${browser.i18n.getMessage("detailsSpeed")} [m]`,
                 value: Qty(activity.elevationGain, 'm').toPrec(0.01).scalar.toLocaleString()
-            };
+            });
         }
         return details;
     }
@@ -190,64 +190,63 @@
     }
 
     function getWeek(weekNumber, year, weekName, result) {
-        let summary = {
-            total: {
-                duration: 0,
-                distance: 0
-            }
-        };
+        let summary = new Map();
+        summary.set('total', {
+            duration: 0,
+            distance: 0
+        });
         for (let i = 0; i < result.activityList.length; i++) {
             let tempWeekName = moment(result.activityList[i].startTimeLocal).format('Y_w');
             if (weekName === tempWeekName) {
-                summary.total.duration += result.activityList[i].duration
-                summary.total.distance += result.activityList[i].distance
+                summary.get('total').duration += result.activityList[i].duration
+                summary.get('total').distance += result.activityList[i].distance
                 switch (result.activityList[i].activityType.typeKey.split('_').pop()) {
                     case "running":
-                        if (summary.running === undefined) {
-                            summary.running = {
+                        if (!summary.has('running')) {
+                            summary.set('running', {
                                 duration: result.activityList[i].duration,
                                 distance: result.activityList[i].distance
-                            };
+                            });
                         }
                         else {
-                            summary.running.duration += result.activityList[i].duration;
-                            summary.running.distance += result.activityList[i].distance;
+                            summary.get('running').duration += result.activityList[i].duration;
+                            summary.get('running').distance += result.activityList[i].distance;
                         }
                         break;
                     case "cycling":
-                        if (summary.cycling === undefined) {
-                            summary.cycling = {
+                        if (!summary.has('cycling')) {
+                            summary.set('cycling', {
                                 duration: result.activityList[i].duration,
                                 distance: result.activityList[i].distance
-                            };
+                            });
                         }
                         else {
-                            summary.cycling.duration += result.activityList[i].duration;
-                            summary.cycling.distance += result.activityList[i].distance;
+                            summary.get('cycling').duration += result.activityList[i].duration;
+                            summary.get('cycling').distance += result.activityList[i].distance;
                         }
                         break;
                     case "swimming":
-                        if (summary.swimming === undefined) {
-                            summary.swimming = {
+                        if (!summary.has('swimming')) {
+                            summary.set('swimming', {
                                 duration: result.activityList[i].duration,
                                 distance: result.activityList[i].distance
-                            };
+                            });
                         }
                         else {
-                            summary.swimming.duration += result.activityList[i].duration;
-                            summary.swimming.distance += result.activityList[i].distance;
+                            summary.get('swimming').duration += result.activityList[i].duration;
+                            summary.get('swimming').distance += result.activityList[i].distance;
                         }
                         break;
                     default:
-                        if (summary.other === undefined) {
-                            summary.other = {
+                        if (!summary.has('other')) {
+                            summary.set('other', {
                                 duration: result.activityList[i].duration,
                                 distance: result.activityList[i].distance
-                            };
+                            });
                         }
                         else {
-                            summary.other.duration += result.activityList[i].duration;
-                            summary.other.distance += result.activityList[i].distance;
+                            summary.get('other').duration += result.activityList[i].duration;
+                            summary.get('other').distance += result.activityList[i].distance;
                         }
                         break;
                 }
@@ -255,51 +254,50 @@
         }
         let viewModel = {
             timePeriod: `${browser.i18n.getMessage("week")} ${weekNumber} ${year}`,
-            summaries: {
-                total: {
-                    name: `${browser.i18n.getMessage("activityTotal")}`,
-                    details: [
-                        `${moment.duration(summary.total.duration, 'seconds').format("HH:mm:ss")}`,
-                        `${Qty(summary.total.distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
-                    ]
-                }
-            }
+            summaries: new Map()
         };
-        if (summary.swimming != undefined) {
-            viewModel.summaries.swimming = {
+        viewModel.summaries.set('total', {
+            name: `${browser.i18n.getMessage("activityTotal")}`,
+            details: [
+                `${moment.duration(summary.get('total').duration, 'seconds').format("HH:mm:ss")}`,
+                `${Qty(summary.get('total').distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
+            ]
+        });
+        if (summary.has('swimming')) {
+            viewModel.summaries.set('swimming', {
                 name: `${browser.i18n.getMessage("activitySwimming")}`,
                 details: [
-                    `${moment.duration(summary.swimming.duration, 'seconds').format("HH:mm:ss")}`,
-                    `${Qty(summary.swimming.distance, 'm').toPrec(1).scalar.toLocaleString()} m`
+                    `${moment.duration(summary.get('swimming').duration, 'seconds').format("HH:mm:ss")}`,
+                    `${Qty(summary.get('swimming').distance, 'm').toPrec(1).scalar.toLocaleString()} m`
                 ]
-            };
+            });
         }
-        if (summary.running != undefined) {
-            viewModel.summaries.running = {
+        if (summary.has('running')) {
+            viewModel.summaries.set('running', {
                 name: `${browser.i18n.getMessage("activityRunning")}`,
                 details: [
-                    `${moment.duration(summary.running.duration, 'seconds').format("HH:mm:ss")}`,
-                    `${Qty(summary.running.distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
+                    `${moment.duration(summary.get('running').duration, 'seconds').format("HH:mm:ss")}`,
+                    `${Qty(summary.get('running').distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
                 ]
-            };
+            });
         }
-        if (summary.cycling != undefined) {
-            viewModel.summaries.cycling = {
+        if (summary.has('cycling')) {
+            viewModel.summaries.set('cycling', {
                 name: `${browser.i18n.getMessage("activityCycling")}`,
                 details: [
-                    `${moment.duration(summary.cycling.duration, 'seconds').format("HH:mm:ss")}`,
-                    `${Qty(summary.cycling.distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
+                    `${moment.duration(summary.get('cycling').duration, 'seconds').format("HH:mm:ss")}`,
+                    `${Qty(summary.get('cycling').distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
                 ]
-            };
+            });
         }
-        if (summary.other != undefined) {
-            viewModel.summaries.other = {
+        if (summary.has('other')) {
+            viewModel.summaries.set('other', {
                 name: `${browser.i18n.getMessage("activityOther")}`,
                 details: [
-                    `${moment.duration(summary.other.duration, 'seconds').format("HH:mm:ss")}`,
-                    `${Qty(summary.other.distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
+                    `${moment.duration(summary.get('other').duration, 'seconds').format("HH:mm:ss")}`,
+                    `${Qty(summary.get('other').distance, 'm').to('km').toPrec(0.01).scalar.toLocaleString()} km`
                 ]
-            };
+            });
         }
         return viewModel;
     }

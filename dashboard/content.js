@@ -4,6 +4,14 @@
         debug = true;
     }
 
+    Handlebars.registerHelper('eachInMap', (map, block) => {
+        let output = '';
+        for (const [key, value] of map) {
+            output += block.fn({key, value});
+        }
+        return output;
+    });
+
     Handlebars.registerPartial('activity', `
         <div class="extension-widget" id="extension-activity-{{id}}">
             <div class="extension-widget-header">
@@ -29,14 +37,14 @@
                         {{/if}}
                     </div>
                     <div class="extension-widget-details">
-                        {{#each details}}
-                            {{#if value}}
+                        {{#eachInMap details}}
+                            {{#if value.value}}
                                 <div>
-                                    <div class="extension-widget-details-value">{{value}}</div>
-                                    <span title="{{name}}" class="extension-widget-details-label">{{name}}</span>
+                                    <div class="extension-widget-details-value">{{value.value}}</div>
+                                    <span title="{{value.name}}" class="extension-widget-details-label">{{value.name}}</span>
                                 </div>
                             {{/if}}
-                        {{/each}}
+                        {{/eachInMap}}
                     </div>
                 </div>
                 <div>
@@ -55,30 +63,22 @@
             </div>
             <div class="extension-widget-body">
                 <div class="extension-widget-details">
-                    {{#each summaries}}
+                    {{#eachInMap summaries}}
                         <div>
                             <div class="extension-widget-details-value">
-                                {{#each details}}
+                                {{#each value.details}}
                                     <div>
                                         {{this}}
                                     </div>
                                 {{/each}}
                             </div>
-                            <span title="{{name}}" class="extension-widget-details-label">{{name}}</span>
+                            <span title="{{value.name}}" class="extension-widget-details-label">{{value.name}}</span>
                         </div>
-                    {{/each}}
+                    {{/eachInMap}}
                 </div>
             </div>
         </div>
     `);
-
-    Handlebars.registerHelper('eachInMap', (map, block) => {
-        let output = '';
-        for (const [key, value] of map) {
-            output += block.fn({key, value});
-        }
-        return output;
-    });
 
     let template = Handlebars.compile(`
         <div>
