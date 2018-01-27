@@ -98,14 +98,6 @@
         browser.runtime.sendMessage({
             type: debug ? "feedMock" : "feed",
             displayName: null
-        }).then(response => {
-            console.log(response.viewModel);
-            try {
-                $(`#${response.viewModel.id}`).html(template(response.viewModel));
-            }
-            catch (error) {
-                console.log(error);
-            }
         });
     }
 
@@ -132,6 +124,12 @@
             <div id="gce-container"></div>
         </div>
     `);
+
+    // Listen for data from background script
+    browser.runtime.onMessage.addListener(request => {
+        console.log(request);
+        $(`#${request.viewModel.id}`).html(template(request.viewModel));
+    });
 
     // When clicking on the menu item for the extender
     $(document).on("click", "#extender-nav-link", (e) => {

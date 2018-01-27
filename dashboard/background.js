@@ -335,29 +335,27 @@
     browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
         switch (request.type) {
             case "feed":
-                return new Promise(resolve => {
-                    $.ajax({
-                        // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018" // Årlig status
-                        // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0" // Januari
-                        // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0/day/18/start/1" // Vecka
-                        // url: "https://connect.garmin.com/modern/proxy/activity-service/activity/2434047486?_=1516287552093" // Enskild aktivitet
-                        url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566"
-                    }).done(function(result) {
-                        resolve({
-                            viewModel: getViewModel(result)
-                        });
+                $.ajax({
+                    // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018" // Årlig status
+                    // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0" // Januari
+                    // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0/day/18/start/1" // Vecka
+                    // url: "https://connect.garmin.com/modern/proxy/activity-service/activity/2434047486?_=1516287552093" // Enskild aktivitet
+                    url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566"
+                }).done(function(result) {
+                    browser.tabs.sendMessage(sender.tab.id, {
+                        viewModel: getViewModel(result)
                     });
                 });
+                break;
             case "feedMock":
-                return new Promise(resolve => {
-                    let mock = new Mock();
-                    let result = mock.getActivityList();
-                    setTimeout(() => {
-                        resolve({
-                            viewModel: getViewModel(result)
-                        });
-                    }, 1000);
-                });
+                let mock = new Mock();
+                let result = mock.getActivityList();
+                setTimeout(() => {
+                    browser.tabs.sendMessage(sender.tab.id, {
+                        viewModel: getViewModel(result)
+                    });
+                }, 1000);
+                break;
         }
     });
 })(jQuery);
