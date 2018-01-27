@@ -1,9 +1,4 @@
 (function ($) {
-    let debug = false;
-    if (window.location.href.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi)) {
-        debug = true;
-    }
-
     Handlebars.registerHelper('eachInMap', (map, block) => {
         let output = '';
         for (const [key, value] of map) {
@@ -11,6 +6,15 @@
         }
         return output;
     });
+
+    Handlebars.registerPartial('activityDetails', `
+        {{#if value}}
+            <div>
+                <div class="gce-widget-details-value">{{value}}</div>
+                <span title="{{name}}" class="gce-widget-details-label">{{name}}</span>
+            </div>
+        {{/if}}
+    `);
 
     Handlebars.registerPartial('activity', `
         <div class="gce-widget" id="{{id}}">
@@ -38,12 +42,7 @@
                     </div>
                     <div class="gce-widget-details">
                         {{#eachInMap details}}
-                            {{#if value.value}}
-                                <div>
-                                    <div class="gce-widget-details-value">{{value.value}}</div>
-                                    <span title="{{value.name}}" class="gce-widget-details-label">{{value.name}}</span>
-                                </div>
-                            {{/if}}
+                            {{>activityDetails value}}
                         {{/eachInMap}}
                     </div>
                 </div>
@@ -51,6 +50,19 @@
                     <img src="{{mapImage}}" />
                 </div>
             </div>
+        </div>
+    `);
+
+    Handlebars.registerPartial('weekSummaries', `
+        <div>
+            <div class="gce-widget-details-value">
+                {{#each details}}
+                    <div>
+                        {{this}}
+                    </div>
+                {{/each}}
+            </div>
+            <span title="{{name}}" class="gce-widget-details-label">{{name}}</span>
         </div>
     `);
 
@@ -64,31 +76,28 @@
             <div class="gce-widget-body">
                 <div class="gce-widget-details">
                     {{#eachInMap summaries}}
-                        <div>
-                            <div class="gce-widget-details-value">
-                                {{#each value.details}}
-                                    <div>
-                                        {{this}}
-                                    </div>
-                                {{/each}}
-                            </div>
-                            <span title="{{value.name}}" class="gce-widget-details-label">{{value.name}}</span>
-                        </div>
+                        {{>weekSummaries value}}
                     {{/eachInMap}}
                 </div>
             </div>
         </div>
+        {{#eachInMap activities}}
+            {{>activity value}}
+        {{/eachInMap}}
     `);
 
-    let template = Handlebars.compile(`
-        <div>
+    Handlebars.registerPartial('year', `
+        <div id="{{id}}">
+            {{#eachInMap weeks}}
+                {{>week value}}
+            {{/eachInMap}}
+        </div>
+    `);
+
+    Handlebars.registerPartial('main', `
+        <div id="{{id}}">
             {{#eachInMap years}}
-                {{#eachInMap value.weeks}}
-                    {{>week value}}
-                    {{#eachInMap value.activities}}
-                        {{>activity value}}
-                    {{/eachInMap}}
-                {{/eachInMap}}
+                {{>year value}}
             {{/eachInMap}}
         </div>
     `);
@@ -96,7 +105,7 @@
     function toggleOverlay() {
         $("#gce-overlay").toggle();
         browser.runtime.sendMessage({
-            type: debug ? "feedMock" : "feed",
+            type: window.location.href.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi) ? "feedMock" : "feed",
             displayName: null
         });
     }
@@ -127,17 +136,20 @@
 
     // Listen for data from background script
     browser.runtime.onMessage.addListener(request => {
-        console.log(request);
-        $(`#${request.viewModel.id}`).html(template(request.viewModel));
+        try {
+            console.log(request);
+            let template = Handlebars.compile(`
+               {{>${request.viewModel.partial}}}
+           `);
+            $(`#${request.viewModel.id}`).html(template(request.viewModel));
+        }
+        catch (error) {
+            console.log(error);
+        }
     });
 
     // When clicking on the menu item for the extender
     $(document).on("click", "#gce-nav-link", (e) => {
         toggleOverlay();
     });
-
-    // When loading the debug page, show the extender immediately
-    if (debug) {
-        toggleOverlay();
-    }
 })(jQuery);
