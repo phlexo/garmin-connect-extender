@@ -78,7 +78,7 @@
                                 </div>
                                 <div class="gce-widget-body">
                                     <div class="gce-widget-details">
-                                        {{#eachInMap summaries}}
+                                        {{#eachInMap summary}}
                                             {{>week value}}
                                         {{/eachInMap}}
                                     </div>
