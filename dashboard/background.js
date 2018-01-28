@@ -145,7 +145,7 @@
         return details;
     }
 
-    function getActivity(activity) {
+    function getActivityViewModel(activity) {
         let viewModel = {
             title: browser.i18n.getMessage("activity"),
             name: activity.activityName,
@@ -190,7 +190,7 @@
         return viewModel;
     }
 
-    function getWeek(weekNumber, year, weekName, result) {
+    function getWeekViewModel(weekNumber, year, weekName, result) {
         let summaries = new Map();
         summaries.set('total', {
             duration: 0,
@@ -305,64 +305,62 @@
         return viewModel;
     }
 
-    function getYear(result) {
+    function getViewModel(result) {
         let viewModel = {
-            weeks: new Map()
+            years: new Map()
         };
+        for (let i = 0; i < result.activityList.length; i++) {
+            let startTime = moment(result.activityList[i].startTimeLocal);
+            let year = startTime.year();
+            if (!viewModel.years.has(year)) {
+                viewModel.years.set(year, {
+                    weeks: new Map()
+                });
+            }
+            let week = startTime.week();
+            if (!viewModel.years.get(year).weeks.has(week)) {
+                viewModel.years.get(year).weeks.set(week, getWeekViewModel(week, year, `${year}_${week}`, result));
+            }
+            viewModel.years.get(year).weeks.get(week).activities.set(result.activityList[i].activityId, getActivityViewModel(result.activityList[i]));
+        }
         return viewModel;
     }
 
-    function getViewModel(result) {
-        let promises = [];
-        promises.push(new Promise((resolve, reject) => {
-            let viewModel = {
-                years: new Map()
-            };
-            for (let i = 0; i < result.activityList.length; i++) {
-                let startTime = moment(result.activityList[i].startTimeLocal);
-                let year = startTime.year();
-                if (!viewModel.years.has(year)) {
-                    viewModel.years.set(year, getYear(result));
-                }
-                let week = startTime.week();
-                if (!viewModel.years.get(year).weeks.has(week)) {
-                    viewModel.years.get(year).weeks.set(week, getWeek(week, year, `${year}_${week}`, result));
-                }
-                viewModel.years.get(year).weeks.get(week).activities.set(result.activityList[i].activityId, getActivity(result.activityList[i]));
+    function loadActivities(type) {
+        return new Promise((resolve, reject) => {
+            switch (type) {
+                case "feed":
+                    $.ajax({
+                        // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018" // Årlig status
+                        // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0" // Januari
+                        // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0/day/18/start/1" // Vecka
+                        // url: "https://connect.garmin.com/modern/proxy/activity-service/activity/2434047486?_=1516287552093" // Enskild aktivitet
+                        url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566"
+                    }).done((result) => {
+                        resolve(result);
+                    });
+                    break;
+                case "feedMock":
+                    resolve(new Mock().getActivityList());
+                    break;
             }
-            resolve(viewModel);
-        }));
-        return Promise.all(promises);
+        });
+    }
+
+    function sendViewModel(viewModel, tabId) {
+        return new Promise((resolve, reject) => {
+            browser.tabs.sendMessage(tabId, {
+                viewModel: viewModel
+            });
+        });
     }
 
     browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        switch (request.type) {
-            case "feed":
-                $.ajax({
-                    // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018" // Årlig status
-                    // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0" // Januari
-                    // url: "https://connect.garmin.com/modern/proxy/calendar-service/year/2018/month/0/day/18/start/1" // Vecka
-                    // url: "https://connect.garmin.com/modern/proxy/activity-service/activity/2434047486?_=1516287552093" // Enskild aktivitet
-                    url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566"
-                }).done(function(result) {
-                    getViewModel(result).then(viewModel => {
-                        browser.tabs.sendMessage(sender.tab.id, {
-                            viewModel: viewModel
-                        });
-                    });
-                });
-                break;
-            case "feedMock":
-                let mock = new Mock();
-                let result = mock.getActivityList();
-                setTimeout(() => {
-                    getViewModel(result).then(results => {
-                        browser.tabs.sendMessage(sender.tab.id, {
-                            viewModel: results[0]
-                        });
-                    });
-                }, 1000);
-                break;
-        }
+        loadActivities(request.type).then((result) => {
+            var viewModel = getViewModel(result);
+            return sendViewModel(viewModel, sender.tab.id);
+        }).catch((error) => {
+            console.log(error);
+        });
     });
 })(jQuery);
