@@ -371,7 +371,7 @@
         loadActivities(request.displayName, request.start, request.limit).then((result) => {
             updateCache(result);
         }).then(() => {
-            return loadRemainingActivities(request.displayName, 30, 10);
+            return loadRemainingActivities(request.displayName, request.start + request.limit, 10);
         }).then((result) => {
             updateCache(result);
         }).then((result) => {
