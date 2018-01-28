@@ -313,22 +313,26 @@
     }
 
     function getViewModel(result) {
-        let viewModel = {
-            years: new Map()
-        };
-        for (let i = 0; i < result.activityList.length; i++) {
-            let startTime = moment(result.activityList[i].startTimeLocal);
-            let year = startTime.year();
-            if (!viewModel.years.has(year)) {
-                viewModel.years.set(year, getYear(result));
+        let promises = [];
+        promises.push(new Promise((resolve, reject) => {
+            let viewModel = {
+                years: new Map()
+            };
+            for (let i = 0; i < result.activityList.length; i++) {
+                let startTime = moment(result.activityList[i].startTimeLocal);
+                let year = startTime.year();
+                if (!viewModel.years.has(year)) {
+                    viewModel.years.set(year, getYear(result));
+                }
+                let week = startTime.week();
+                if (!viewModel.years.get(year).weeks.has(week)) {
+                    viewModel.years.get(year).weeks.set(week, getWeek(week, year, `${year}_${week}`, result));
+                }
+                viewModel.years.get(year).weeks.get(week).activities.set(result.activityList[i].activityId, getActivity(result.activityList[i]));
             }
-            let week = startTime.week();
-            if (!viewModel.years.get(year).weeks.has(week)) {
-                viewModel.years.get(year).weeks.set(week, getWeek(week, year, `${year}_${week}`, result));
-            }
-            viewModel.years.get(year).weeks.get(week).activities.set(result.activityList[i].activityId, getActivity(result.activityList[i]));
-        }
-        return viewModel;
+            resolve(viewModel);
+        }));
+        return Promise.all(promises);
     }
 
     browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
@@ -341,8 +345,10 @@
                     // url: "https://connect.garmin.com/modern/proxy/activity-service/activity/2434047486?_=1516287552093" // Enskild aktivitet
                     url: "https://connect.garmin.com/modern/proxy/activitylist-service/activities/phlexo?start=1&limit=30&_=1516279328566"
                 }).done(function(result) {
-                    browser.tabs.sendMessage(sender.tab.id, {
-                        viewModel: getViewModel(result)
+                    getViewModel(result).then(viewModel => {
+                        browser.tabs.sendMessage(sender.tab.id, {
+                            viewModel: viewModel
+                        });
                     });
                 });
                 break;
@@ -350,8 +356,10 @@
                 let mock = new Mock();
                 let result = mock.getActivityList();
                 setTimeout(() => {
-                    browser.tabs.sendMessage(sender.tab.id, {
-                        viewModel: getViewModel(result)
+                    getViewModel(result).then(results => {
+                        browser.tabs.sendMessage(sender.tab.id, {
+                            viewModel: results[0]
+                        });
                     });
                 }, 1000);
                 break;
