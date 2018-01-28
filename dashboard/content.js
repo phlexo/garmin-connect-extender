@@ -7,15 +7,6 @@
         return output;
     });
 
-    Handlebars.registerPartial('activityDetails', `
-        {{#if value}}
-            <div>
-                <div class="gce-widget-details-value">{{value}}</div>
-                <span title="{{name}}" class="gce-widget-details-label">{{name}}</span>
-            </div>
-        {{/if}}
-    `);
-
     Handlebars.registerPartial('activity', `
         <div class="gce-widget" id="{{id}}">
             <div class="gce-widget-header">
@@ -42,7 +33,14 @@
                     </div>
                     <div class="gce-widget-details">
                         {{#eachInMap details}}
-                            {{>activityDetails value}}
+                            {{#with value}}
+                                {{#if value}}
+                                    <div>
+                                        <div class="gce-widget-details-value">{{value}}</div>
+                                        <span title="{{name}}" class="gce-widget-details-label">{{name}}</span>
+                                    </div>
+                                {{/if}}
+                            {{/with}}
                         {{/eachInMap}}
                     </div>
                 </div>
@@ -53,7 +51,7 @@
         </div>
     `);
 
-    Handlebars.registerPartial('weekSummaries', `
+    Handlebars.registerPartial('week', `
         <div>
             <div class="gce-widget-details-value">
                 {{#each details}}
@@ -66,38 +64,32 @@
         </div>
     `);
 
-    Handlebars.registerPartial('week', `
-        <div class="gce-widget gce-summary" id="{{id}}">
-            <div class="gce-widget-header">
-                <div>
-                    <h2>{{title}} &lt;{{timePeriod}}&gt;</h2>
-                </div>
-            </div>
-            <div class="gce-widget-body">
-                <div class="gce-widget-details">
-                    {{#eachInMap summaries}}
-                        {{>weekSummaries value}}
-                    {{/eachInMap}}
-                </div>
-            </div>
-        </div>
-        {{#eachInMap activities}}
-            {{>activity value}}
-        {{/eachInMap}}
-    `);
-
-    Handlebars.registerPartial('year', `
-        <div id="{{id}}">
-            {{#eachInMap weeks}}
-                {{>week value}}
-            {{/eachInMap}}
-        </div>
-    `);
-
-    Handlebars.registerPartial('main', `
-        <div id="{{id}}">
+    let template = Handlebars.compile(`
+        <div>
             {{#eachInMap years}}
-                {{>year value}}
+                {{#with value}}
+                    {{#eachInMap weeks}}
+                        {{#with value}}
+                            <div class="gce-widget gce-summary" id="{{id}}">
+                                <div class="gce-widget-header">
+                                    <div>
+                                        <h2>{{title}} &lt;{{timePeriod}}&gt;</h2>
+                                    </div>
+                                </div>
+                                <div class="gce-widget-body">
+                                    <div class="gce-widget-details">
+                                        {{#eachInMap summaries}}
+                                            {{>week value}}
+                                        {{/eachInMap}}
+                                    </div>
+                                </div>
+                            </div>
+                            {{#eachInMap activities}}
+                                {{>activity value}}
+                            {{/eachInMap}}
+                        {{/with}}
+                    {{/eachInMap}}
+                {{/with}}
             {{/eachInMap}}
         </div>
     `);
@@ -138,10 +130,7 @@
     browser.runtime.onMessage.addListener(request => {
         try {
             console.log(request);
-            let template = Handlebars.compile(`
-               {{>${request.viewModel.partial}}}
-           `);
-            $(`#${request.viewModel.id}`).html(template(request.viewModel));
+            $('#gce-container').html(template(request.viewModel));
         }
         catch (error) {
             console.log(error);

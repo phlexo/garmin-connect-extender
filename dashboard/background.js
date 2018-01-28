@@ -304,8 +304,6 @@
 
     function getViewModel(result) {
         let viewModel = {
-            id: 'gce-container',
-            partial: 'main',
             years: new Map()
         };
         for (let i = 0; i < result.activityList.length; i++) {
@@ -313,23 +311,17 @@
             let year = startTime.year();
             if (!viewModel.years.has(year)) {
                 viewModel.years.set(year, Object.assign({
-                    id: `gce-${year}`,
-                    partial: 'year',
                     weeks: new Map()
                 }));
             }
             let week = startTime.week();
             if (!viewModel.years.get(year).weeks.has(week)) {
                 viewModel.years.get(year).weeks.set(week, Object.assign({
-                    id: `gce-${year}-${week}`,
-                    partial: 'week',
                     title: browser.i18n.getMessage("summary"),
                     activities: new Map()
                 }, getWeek(week, year, `${year}_${week}`, result)));
             }
             viewModel.years.get(year).weeks.get(week).activities.set(result.activityList[i].activityId, Object.assign({
-                id: `gce-${result.activityList[i].activityId}`,
-                partial: 'activity',
                 title: browser.i18n.getMessage("activity")
             }, getActivity(result.activityList[i])));
         }
