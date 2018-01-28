@@ -147,6 +147,7 @@
 
     function getActivity(activity) {
         let viewModel = {
+            title: browser.i18n.getMessage("activity"),
             name: activity.activityName,
             type: activity.activityType.typeKey,
             iconClass: null,
@@ -253,8 +254,10 @@
             }
         }
         let viewModel = {
+            title: browser.i18n.getMessage("summary"),
             timePeriod: `${browser.i18n.getMessage("week")} ${weekNumber} ${year}`,
-            summaries: new Map()
+            summaries: new Map(),
+            activities: new Map()
         };
         viewModel.summaries.set('total', {
             name: `${browser.i18n.getMessage("activityTotal")}`,
@@ -302,6 +305,13 @@
         return viewModel;
     }
 
+    function getYear(result) {
+        let viewModel = {
+            weeks: new Map()
+        };
+        return viewModel;
+    }
+
     function getViewModel(result) {
         let viewModel = {
             years: new Map()
@@ -310,20 +320,13 @@
             let startTime = moment(result.activityList[i].startTimeLocal);
             let year = startTime.year();
             if (!viewModel.years.has(year)) {
-                viewModel.years.set(year, Object.assign({
-                    weeks: new Map()
-                }));
+                viewModel.years.set(year, getYear(result));
             }
             let week = startTime.week();
             if (!viewModel.years.get(year).weeks.has(week)) {
-                viewModel.years.get(year).weeks.set(week, Object.assign({
-                    title: browser.i18n.getMessage("summary"),
-                    activities: new Map()
-                }, getWeek(week, year, `${year}_${week}`, result)));
+                viewModel.years.get(year).weeks.set(week, getWeek(week, year, `${year}_${week}`, result));
             }
-            viewModel.years.get(year).weeks.get(week).activities.set(result.activityList[i].activityId, Object.assign({
-                title: browser.i18n.getMessage("activity")
-            }, getActivity(result.activityList[i])));
+            viewModel.years.get(year).weeks.get(week).activities.set(result.activityList[i].activityId, getActivity(result.activityList[i]));
         }
         return viewModel;
     }
