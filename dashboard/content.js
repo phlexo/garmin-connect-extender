@@ -97,8 +97,9 @@
     function toggleOverlay() {
         $("#gce-overlay").toggle();
         browser.runtime.sendMessage({
-            type: window.location.href.match(/file:\/\/\/.*\/debug\/garmin-connect-extender\.html/gi) ? "feedMock" : "feed",
-            displayName: null
+            displayName: 'phlexo',
+            start: 1,
+            limit: 30
         });
     }
 
@@ -129,7 +130,6 @@
     // Listen for data from background script
     browser.runtime.onMessage.addListener(request => {
         try {
-            console.log(request);
             $('#gce-container').html(template(request.viewModel));
         }
         catch (error) {

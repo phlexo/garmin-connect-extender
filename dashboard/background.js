@@ -1,6 +1,4 @@
 (function ($) {
-    const debug = true;
-
     browser.i18n.getAcceptLanguages().then((languages) => {
         if (languages.length > 0) {
             moment.locale(languages[0]);
@@ -335,16 +333,11 @@
 
     function loadActivities(displayName, start, limit) {
         return new Promise((resolve, reject) => {
-            if (debug) {
-                resolve(new Mock().getActivityList());
-            }
-            else {
-                $.ajax({
-                    url: `https://connect.garmin.com/modern/proxy/activitylist-service/activities/${displayName}?start=${start}&limit=${limit}&_=${Math.floor(Math.random() * Math.floor(9999999999999))}`
-                }).done((result) => {
-                    resolve(result);
-                });
-            }
+            $.ajax({
+                url: `https://connect.garmin.com/modern/proxy/activitylist-service/activities/${displayName}?start=${start}&limit=${limit}&_=${Math.floor(Math.random() * Math.floor(9999999999999))}`
+            }).done((result) => {
+                resolve(result);
+            });
         });
     }
 
@@ -357,7 +350,7 @@
     }
 
     browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        loadActivities('phlexo', 1, 30).then((result) => {
+        loadActivities(request.displayName, request.start, request.limit).then((result) => {
             var viewModel = getViewModel(result);
             return sendViewModel(viewModel, sender.tab.id);
         }).catch((error) => {
