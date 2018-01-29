@@ -97,7 +97,7 @@
     function toggleOverlay() {
         $("#gce-overlay").toggle();
         browser.runtime.sendMessage({
-            displayName: 'phlexo'
+            action: 'loadActivities'
         });
     }
 

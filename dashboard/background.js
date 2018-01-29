@@ -1,4 +1,6 @@
 (function ($) {
+    let viewerSocialProfile = null;
+
     browser.i18n.getAcceptLanguages().then((languages) => {
         if (languages.length > 0) {
             moment.locale(languages[0]);
@@ -8,6 +10,25 @@
     browser.tabs.onUpdated.addListener((id, changeInfo, tab) => {
         browser.tabs.insertCSS(tab.id, {
             file: browser.extension.getURL("dashboard/style.css")
+        });
+        browser.tabs.executeScript(tab.id,{
+            code: "document.body.innerHTML;"
+        }, function (result) {
+            let regexp = /VIEWER_SOCIAL_PROFILE = JSON.parse\((.*)\);$/g;
+            let lines = result[0].split('\n');
+            try {
+                for (let i = 0; i < lines.length; i++) {
+                    var match = regexp.exec(lines[i]);
+                    if (match != null && match.length > 1) {
+                        // The first parse unescapes the string
+                        viewerSocialProfile = JSON.parse(JSON.parse(match[1]));
+                        break;
+                    }
+                }
+            }
+            catch (error) {
+                console.log(error);
+            }
         });
     });
 
@@ -352,17 +373,21 @@
     }
 
     browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        const format = 'YYYY[-]MM[-]DD[T]HH[:]mm[:]ss[.]SS';
-        let from = moment().subtract(8, 'weeks').startOf('isoWeek');
-        let to = moment().endOf('isoWeek');
-        console.log(`displayName=${request.displayName}`);
-        console.log(`from=${from.format(format)}`);
-        console.log(`to=${to.format(format)}`);
-        loadActivities(request.displayName, from.format(format), to.format(format)).then((result) => {
-            let viewModel = getViewModel(result);
-            return sendViewModel(viewModel, sender.tab.id);
-        }).catch((error) => {
-            console.log(error);
-        });
+        if (viewerSocialProfile === null) {
+            throw "The social profile wasn't found, this is required for loading activity data."
+        }
+        switch (request.action) {
+            case "loadActivities":
+                const format = 'YYYY[-]MM[-]DD[T]HH[:]mm[:]ss[.]SS';
+                let from = moment().subtract(8, 'weeks').startOf('isoWeek');
+                let to = moment().endOf('isoWeek');
+                loadActivities(viewerSocialProfile.displayName, from.format(format), to.format(format)).then((result) => {
+                    let viewModel = getViewModel(result);
+                    return sendViewModel(viewModel, sender.tab.id);
+                }).catch((error) => {
+                    console.log(error);
+                });
+                break;
+        }
     });
 })(jQuery);
