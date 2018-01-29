@@ -1,6 +1,4 @@
 (function ($) {
-    let activityCache = new Map();
-
     browser.i18n.getAcceptLanguages().then((languages) => {
         if (languages.length > 0) {
             moment.locale(languages[0]);
@@ -192,64 +190,64 @@
         return viewModel;
     }
 
-    function getWeekSummary(year, week) {
+    function getWeekSummary(year, week, result) {
         let summary = new Map();
         summary.set('total', {
             duration: 0,
             distance: 0
         });
-        for (var [activityId, activity] of activityCache) {
-            let startTime = moment(activity.startTimeLocal);
+        for (let i = 0; i < result.activityList.length; i++) {
+            let startTime = moment(result.activityList[i].startTimeLocal);
             if (year === startTime.year() && week === startTime.week()) {
-                summary.get('total').duration += activity.duration
-                summary.get('total').distance += activity.distance
-                switch (activity.activityType.typeKey.split('_').pop()) {
+                summary.get('total').duration += result.activityList[i].duration
+                summary.get('total').distance += result.activityList[i].distance
+                switch (result.activityList[i].activityType.typeKey.split('_').pop()) {
                     case "running":
                         if (!summary.has('running')) {
                             summary.set('running', {
-                                duration: activity.duration,
-                                distance: activity.distance
+                                duration: result.activityList[i].duration,
+                                distance: result.activityList[i].distance
                             });
                         }
                         else {
-                            summary.get('running').duration += activity.duration;
-                            summary.get('running').distance += activity.distance;
+                            summary.get('running').duration += result.activityList[i].duration;
+                            summary.get('running').distance += result.activityList[i].distance;
                         }
                         break;
                     case "cycling":
                         if (!summary.has('cycling')) {
                             summary.set('cycling', {
-                                duration: activity.duration,
-                                distance: activity.distance
+                                duration: result.activityList[i].duration,
+                                distance: result.activityList[i].distance
                             });
                         }
                         else {
-                            summary.get('cycling').duration += activity.duration;
-                            summary.get('cycling').distance += activity.distance;
+                            summary.get('cycling').duration += result.activityList[i].duration;
+                            summary.get('cycling').distance += result.activityList[i].distance;
                         }
                         break;
                     case "swimming":
                         if (!summary.has('swimming')) {
                             summary.set('swimming', {
-                                duration: activity.duration,
-                                distance: activity.distance
+                                duration: result.activityList[i].duration,
+                                distance: result.activityList[i].distance
                             });
                         }
                         else {
-                            summary.get('swimming').duration += activity.duration;
-                            summary.get('swimming').distance += activity.distance;
+                            summary.get('swimming').duration += result.activityList[i].duration;
+                            summary.get('swimming').distance += result.activityList[i].distance;
                         }
                         break;
                     default:
                         if (!summary.has('other')) {
                             summary.set('other', {
-                                duration: activity.duration,
-                                distance: activity.distance
+                                duration: result.activityList[i].duration,
+                                distance: result.activityList[i].distance
                             });
                         }
                         else {
-                            summary.get('other').duration += activity.duration;
-                            summary.get('other').distance += activity.distance;
+                            summary.get('other').duration += result.activityList[i].duration;
+                            summary.get('other').distance += result.activityList[i].distance;
                         }
                         break;
                 }
@@ -311,12 +309,12 @@
         return viewModel;
     }
 
-    function getViewModel() {
+    function getViewModel(result) {
         let viewModel = {
             years: new Map()
         };
-        for (var [activityId, activity] of activityCache) {
-            let startTime = moment(activity.startTimeLocal);
+        for (let i = 0; i < result.activityList.length; i++) {
+            let startTime = moment(result.activityList[i].startTimeLocal);
             let year = startTime.year();
             if (!viewModel.years.has(year)) {
                 viewModel.years.set(year, {
@@ -325,38 +323,24 @@
             }
             let week = startTime.week();
             if (!viewModel.years.get(year).weeks.has(week)) {
-                let summary = getWeekSummary(year, week);
-                viewModel.years.get(year).weeks.set(week, getWeekViewModel(year, week, summary));
+                let summary = getWeekSummary(year, week, result);
+                let weekViewModel = getWeekViewModel(year, week, summary);
+                viewModel.years.get(year).weeks.set(week, weekViewModel);
             }
-            viewModel.years.get(year).weeks.get(week).activities.set(activityId, getActivityViewModel(activity));
+            let activityViewModel = getActivityViewModel(result.activityList[i]);
+            viewModel.years.get(year).weeks.get(week).activities.set(result.activityList[i].activityId, activityViewModel);
         }
         return viewModel;
     }
 
-    function loadActivities(displayName, start, limit) {
+    function loadActivities(displayName, from, to) {
         return new Promise((resolve, reject) => {
             $.ajax({
-                url: `https://connect.garmin.com/modern/proxy/activitylist-service/activities/${displayName}?start=${start}&limit=${limit}&_=${Math.floor(Math.random() * Math.floor(9999999999999))}`
+                url: `https://connect.garmin.com/modern/proxy/activitylist-service/activities/list/${displayName}?startTimestampLocal=${from}&endTimestampLocal=${to}&_=${Math.floor(Math.random() * Math.floor(999999999999))}`
             }).done((result) => {
                 resolve(result);
             });
         });
-    }
-    
-    function loadRemainingActivities(displayName, start, limit) {
-        return new Promise((resolve, reject) => {
-            $.ajax({
-                url: `https://connect.garmin.com/modern/proxy/activitylist-service/activities/${displayName}?start=${start}&limit=${limit}&_=${Math.floor(Math.random() * Math.floor(9999999999999))}`
-            }).done((result) => {
-                resolve(result);
-            });
-        });
-    }
-
-    function updateCache(result) {
-        for (let i = 0; i < result.activityList.length; i++) {
-            activityCache.set(result.activityList[i].activityId, result.activityList[i]);
-        }
     }
 
     function sendViewModel(viewModel, tabId) {
@@ -368,14 +352,15 @@
     }
 
     browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
-        loadActivities(request.displayName, request.start, request.limit).then((result) => {
-            updateCache(result);
-        }).then(() => {
-            return loadRemainingActivities(request.displayName, request.start + request.limit, 10);
-        }).then((result) => {
-            updateCache(result);
-        }).then((result) => {
-            return sendViewModel(getViewModel(), sender.tab.id);
+        const format = 'YYYY[-]MM[-]DD[T]HH[:]mm[:]ss[.]SS';
+        let from = moment().subtract(8, 'weeks').startOf('isoWeek');
+        let to = moment().endOf('isoWeek');
+        console.log(`displayName=${request.displayName}`);
+        console.log(`from=${from.format(format)}`);
+        console.log(`to=${to.format(format)}`);
+        loadActivities(request.displayName, from.format(format), to.format(format)).then((result) => {
+            let viewModel = getViewModel(result);
+            return sendViewModel(viewModel, sender.tab.id);
         }).catch((error) => {
             console.log(error);
         });
