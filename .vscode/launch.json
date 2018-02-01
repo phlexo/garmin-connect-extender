@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch garmin-connect-extender.html",
+            "type": "firefox",
+            "request": "launch",
+            "reAttach": true,
+            "reloadOnAttach": true,
+            "file": "${workspaceFolder}/debug/garmin-connect-extender.html",
+            "addonType": "webExtension",
+            "addonPath": "${workspaceFolder}"
+        }
+    ]
+}
